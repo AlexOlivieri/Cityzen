@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Cityzen</string>
+
+    <!--- Strings for Temporal Activity -->
+    <string name="text_view_instruction">Define the time interval</string>
+    <string name="button_go">GO</string>
 </resources>
