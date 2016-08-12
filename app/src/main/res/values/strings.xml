@@ -4,4 +4,9 @@
     <!--- Strings for Temporal Activity -->
     <string name="text_view_instruction">Define the time interval</string>
     <string name="button_go">Explore Cultural Interests</string>
+
+    <!--- Strings for Cultural Interests Gallery Activity -->
+    <string name="cultural_item_title">Title</string>
+    <string name="cultural_item_description">Description</string>
+
 </resources>

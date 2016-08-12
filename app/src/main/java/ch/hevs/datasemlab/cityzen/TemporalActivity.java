@@ -1,10 +1,12 @@
 package ch.hevs.datasemlab.cityzen;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -25,7 +27,8 @@ public class TemporalActivity extends AppCompatActivity {
 
     private final String TAG = Activity.class.getName();
 
-    private final String STARTING_DATE = "starting_date";
+    public static final String STARTING_DATE = "starting_date";
+    public static final String FINISHING_DATE = "finishing_date";
 
     private int currentYear;
 
@@ -145,6 +148,14 @@ public class TemporalActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    public void exploreCulturalInterests(View view){
+        Intent exploreCulturalInterestsIntent = new Intent(this, CulturalInterestsGalleryActivity.class);
+        exploreCulturalInterestsIntent.putExtra(STARTING_DATE, Integer.parseInt(textView1.getText().toString()));
+        exploreCulturalInterestsIntent.putExtra(FINISHING_DATE, Integer.parseInt(textView2.getText().toString()));
+
+        startActivity(exploreCulturalInterestsIntent);
     }
 
     private int getCurrentYear() {
