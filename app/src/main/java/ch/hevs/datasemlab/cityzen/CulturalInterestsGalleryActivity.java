@@ -1,6 +1,7 @@
 package ch.hevs.datasemlab.cityzen;
 
 import android.app.Activity;
+import android.database.MatrixCursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +22,10 @@ import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 public class CulturalInterestsGalleryActivity extends AppCompatActivity {
 
     private final String TAG = Activity.class.getName();
+
+    private String[] cursorColumnsTitle = {"Title", "Description", "Image"};
+
+    private MatrixCursor cursorCulturalInterests = new MatrixCursor(cursorColumnsTitle);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,17 +97,17 @@ public class CulturalInterestsGalleryActivity extends AppCompatActivity {
                 qb.append(" FILTER ( ?date >= \"1950\" && ?date <= \"1980\") } ");
 
                 qb.append("ORDER BY ?date");
-                qb.append(" LIMIT 1 ");
+                //qb.append(" LIMIT 1 ");
 
                 result = conn.prepareTupleQuery(QueryLanguage.SPARQL, qb.toString()).evaluate();
-
-
 
             } finally {
                 conn.close();
             }
             return result;
         }
+
+        private String[] rowValues = new String[3];
 
         @Override
         protected void onPostExecute(TupleQueryResult result) {
@@ -113,10 +118,20 @@ public class CulturalInterestsGalleryActivity extends AppCompatActivity {
                 Value descriptionValue = bs.getValue("description");
                 Value imageValue = bs.getValue("image");
                 String title = titleValue.stringValue();
+                rowValues[0] = title;
                 String description = descriptionValue.stringValue();
+                rowValues[1] = description;
                 String image = imageValue.stringValue();
+                rowValues[2] = image;
                 Log.i(TAG,  title + ", " + description + ", " + image);
 
+                cursorCulturalInterests.addRow(rowValues);
+            }
+            Log.i(TAG + "number of rows", String.valueOf(cursorCulturalInterests.getCount()));
+            if(cursorCulturalInterests.moveToNext()) {
+                Log.i(TAG, cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Title")));
+                Log.i(TAG, cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Description")));
+                Log.i(TAG, cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Image")));
             }
         }
     }
