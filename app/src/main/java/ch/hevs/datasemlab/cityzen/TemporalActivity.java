@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -25,6 +26,8 @@ public class TemporalActivity extends AppCompatActivity {
     private final String TAG = Activity.class.getName();
 
     private final String STARTING_DATE = "starting_date";
+
+    private int currentYear;
 
     private SeekBar seekBarStart;
     private TextView textView1;
@@ -49,6 +52,8 @@ public class TemporalActivity extends AppCompatActivity {
         //textView2.setText(getCurrentYear());
         Button button = (Button) findViewById(R.id.button_go);
 
+        currentYear = getCurrentYear();
+
         String cityzenURL = "http://ec2-52-39-53-29.us-west-2.compute.amazonaws.com:8080/openrdf-sesame/repositories/CityZenDM";
 
         //sendStartingDateQuery(textView1, cityzenURL);
@@ -63,9 +68,25 @@ public class TemporalActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
-                seekBar.setMax(getCurrentYear()-oldestStartingDate);
+                seekBar.setMax(currentYear - oldestStartingDate);
                 Log.i(TAG + "Progress Value", String.valueOf(progressValue));
-                textView1.setText(String.valueOf(oldestStartingDate+progressValue));
+                int chosenStartingDate = oldestStartingDate + progressValue;
+
+                if (isLegalMove(chosenStartingDate)) {
+                    textView1.setText(String.valueOf(chosenStartingDate));
+                    seekBar.setProgress(seekBar.getProgress());
+                } else {
+                    Toast.makeText(getApplicationContext(), "Starting Date can not be successive to the Finishing Date", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            private boolean isLegalMove(int chosenStartingDate) {
+                if (chosenStartingDate <= Integer.parseInt(textView2.getText().toString())) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
 
             // TODO
@@ -89,9 +110,25 @@ public class TemporalActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
 
-                seekBar.setMax(getCurrentYear()-oldestStartingDate);
+                seekBar.setMax(currentYear-oldestStartingDate);
                 Log.i(TAG + "Progress Value", String.valueOf(progressValue));
-                textView2.setText(String.valueOf(oldestStartingDate+progressValue));
+                int chosenFinishingDate = currentYear-progressValue;
+
+                if (isLegalMove(chosenFinishingDate)) {
+                    textView2.setText(String.valueOf(chosenFinishingDate));
+                    seekBar.setProgress(seekBar.getProgress());
+                }else{
+                    Toast.makeText(getApplicationContext(), "Finishing Date can not be antecedent to the Starting Date", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            private boolean isLegalMove( int chosenFinishingValue) {
+                if ((seekBarStart == null) || (chosenFinishingValue >= Integer.parseInt(textView1.getText().toString()))) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
 
             // TODO
@@ -247,7 +284,7 @@ public class TemporalActivity extends AppCompatActivity {
             oldestStartingDate = Integer.parseInt(s);
             Log.i(TAG + "oldestStartingDate", String.valueOf(oldestStartingDate));
             textView1.setText(s);
-            textView2.setText(s);
+            textView2.setText(String.valueOf(currentYear));
         }
     }
 
