@@ -12,24 +12,24 @@
         android:id="@+id/linear_layout_cultural_interest"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+         >
 
         <TextView
             android:id="@+id/text_view_cultural_item_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/cultural_item_title"/>
+            android:text="@string/cultural_item_title"
+            android:background="@color/colorPrimary"/>
 
         <TextView
             android:id="@+id/text_view_cultural_item_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="3"
             android:text="@string/cultural_item_description"/>
 
     </LinearLayout>
-
-
 
 </LinearLayout>

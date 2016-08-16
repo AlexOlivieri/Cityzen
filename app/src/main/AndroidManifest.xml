@@ -17,7 +17,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CulturalInterestsGalleryActivity"></activity>
+        <activity android:name=".CulturalInterestsGalleryActivity" />
+        <activity android:name=".CulturalInterestsGalleryActivityWithCursorLoader" />
+        <activity android:name=".CulturalInterestsGalleryActivity2"></activity>
     </application>
 
 </manifest>

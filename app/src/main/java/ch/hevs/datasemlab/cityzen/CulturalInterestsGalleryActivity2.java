@@ -24,11 +24,11 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class CulturalInterestsGalleryActivity extends AppCompatActivity {
+public class CulturalInterestsGalleryActivity2 extends AppCompatActivity {
 
     private final String TAG = CulturalInterestsGalleryActivity.class.getSimpleName();
 
-    private String[] cursorColumnsTitle = {"_id", "Title", "Description", "Image"};
+    private String[] cursorColumnsTitle = {"_id", "Title", "Image"};
 
     private MatrixCursor cursorCulturalInterests = new MatrixCursor(cursorColumnsTitle);
 
@@ -55,16 +55,6 @@ public class CulturalInterestsGalleryActivity extends AppCompatActivity {
         Toast.makeText(this, String.valueOf(startingDate) + " , " + String.valueOf(finishingDate), Toast.LENGTH_SHORT).show();
 
         new GetCulturalInterests().execute();
-
-//        String[] fromData = {CityzenContracts.IMAGE, CityzenContracts.TITLE, CityzenContracts.DESCRIPTION};
-//
-//        int[] toViews = {R.id.image_view_cultural_interest_image, R.id.text_view_cultural_item_title, R.id.text_view_cultural_item_description};
-
-//        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
-//                R.layout.list_item_cultural_interests,
-//                cursorCulturalInterests,
-//                fromData, toViews,
-//                0);
 
         listView = (ListView) findViewById(R.id.list_view);
 
@@ -107,19 +97,15 @@ public class CulturalInterestsGalleryActivity extends AppCompatActivity {
                 qb.append("PREFIX dc: <http://purl.org/dc/elements/1.1/> \n");
                 qb.append("PREFIX dcterms: <http://purl.org/dc/terms/> \n");
 
-                qb.append(" SELECT DISTINCT ?title ?description ?image \n ");
+                qb.append(" SELECT DISTINCT ?title ?image \n ");
 
                 qb.append(" WHERE {?culturalInterest dc:title ?title . \n ");
-                qb.append(" ?culturalInterest dc:description ?description . \n");
 
                 qb.append(" ?digitalrepresentationAggregator edm:aggregatedCHO ?culturalInterest . \n");
-                qb.append(" ?digitalrepresentationAggregator rdf:type schema:DigitalRepresentationAggregator . \n");
                 qb.append(" ?digitalrepresentationAggregator edm:hasView ?digitalrepresentation . \n");
                 qb.append(" ?digitalrepresentation dcterms:hasPart ?digitalItem . \n");
                 qb.append(" ?digitalItem schema:thumbnail_url ?image . \n");
-                qb.append(" schema:DigitalRepresentationAggregator rdfs:subClassOf owlTime:TemporalEntity . \n");
-                qb.append(" ?temporalEntity rdf:type owlTime:TemporalEntity . \n");
-                qb.append(" ?temporalEntity owlTime:hasBeginning ?instant . \n");
+                qb.append(" ?digitalrepresentationAggregator owlTime:hasBeginning ?instant . \n");
 
                 qb.append(" ?instant owlTime:inXSDDateTime ?date . ");
 
@@ -136,7 +122,7 @@ public class CulturalInterestsGalleryActivity extends AppCompatActivity {
             return result;
         }
 
-        private Object[] rowValues = new Object[4];
+        private Object[] rowValues = new Object[3];
 
         @Override
         protected void onPostExecute(TupleQueryResult result) {
@@ -146,12 +132,9 @@ public class CulturalInterestsGalleryActivity extends AppCompatActivity {
                 BindingSet bs = result.next();
                 rowValues[0] = String.valueOf(i);
                 Value titleValue = bs.getValue("title");
-                Value descriptionValue = bs.getValue("description");
                 Value imageValue = bs.getValue("image");
                 String title = titleValue.stringValue();
                 rowValues[1] = title;
-                String description = descriptionValue.stringValue();
-                rowValues[2] = description;
                 String image = imageValue.stringValue();
                 URL url = null;
                 Bitmap bitmap = null;
@@ -163,13 +146,13 @@ public class CulturalInterestsGalleryActivity extends AppCompatActivity {
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                     bitmapArray = stream.toByteArray();
-                    rowValues[3] = bitmapArray;
+                    rowValues[2] = bitmapArray;
                 }catch (MalformedURLException e){
                     e.printStackTrace();
-                }catch (IOException e){
+                }catch (IOException e) {
                     e.printStackTrace();
+                    System.err.println("Title: " + title);
                 }
-
 //                Log.i(TAG,  title + ", " + description + ", " + image);
 
                 i++;
@@ -183,7 +166,7 @@ public class CulturalInterestsGalleryActivity extends AppCompatActivity {
 //                Log.i(TAG + " Description: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Description")));
 //                Log.i(TAG + " Image: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Image")));
 //           }
-            adapter = new CulturalInterestsAdapter(CulturalInterestsGalleryActivity.this, cursorCulturalInterests, 0);
+            adapter = new CulturalInterestsAdapter(CulturalInterestsGalleryActivity2.this, cursorCulturalInterests, 0);
             listView.setAdapter(adapter);
             //adapter.changeCursor(cursorCulturalInterests);
         }

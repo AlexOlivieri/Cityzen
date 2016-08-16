@@ -1,6 +1,5 @@
 package ch.hevs.datasemlab.cityzen;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,10 +24,12 @@ import java.util.GregorianCalendar;
 
 public class TemporalActivity extends AppCompatActivity {
 
-    private final String TAG = Activity.class.getName();
+    private final String TAG = TemporalActivity.class.getSimpleName();
 
     public static final String STARTING_DATE = "starting_date";
     public static final String FINISHING_DATE = "finishing_date";
+
+    public static final String REPOSITORY_URL = "http://ec2-52-39-53-29.us-west-2.compute.amazonaws.com:8080/openrdf-sesame/repositories/CityZenDM";
 
     private int currentYear;
 
@@ -57,12 +58,12 @@ public class TemporalActivity extends AppCompatActivity {
 
         currentYear = getCurrentYear();
 
-        String cityzenURL = "http://ec2-52-39-53-29.us-west-2.compute.amazonaws.com:8080/openrdf-sesame/repositories/CityZenDM";
+
 
         //sendStartingDateQuery(textView1, cityzenURL);
 
         //new GetNewestStartingDateTask().execute(cityzenURL);
-        new GetOldestStartingDateTask().execute(cityzenURL);
+        new GetOldestStartingDateTask().execute(REPOSITORY_URL);
 
 
         seekBarStart.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -72,7 +73,7 @@ public class TemporalActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
                 seekBar.setMax(currentYear - oldestStartingDate);
-                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
+//                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
                 int chosenStartingDate = oldestStartingDate + progressValue;
 
                 if (isLegalMove(chosenStartingDate)) {
@@ -84,6 +85,7 @@ public class TemporalActivity extends AppCompatActivity {
             }
 
             private boolean isLegalMove(int chosenStartingDate) {
+                Log.i(TAG + " finishing time: ", String.valueOf(chosenStartingDate));
                 if (chosenStartingDate <= Integer.parseInt(textView2.getText().toString())) {
                     return true;
                 }
@@ -114,7 +116,7 @@ public class TemporalActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
 
                 seekBar.setMax(currentYear-oldestStartingDate);
-                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
+//                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
                 int chosenFinishingDate = currentYear-progressValue;
 
                 if (isLegalMove(chosenFinishingDate)) {
@@ -151,7 +153,7 @@ public class TemporalActivity extends AppCompatActivity {
     }
 
     public void exploreCulturalInterests(View view){
-        Intent exploreCulturalInterestsIntent = new Intent(this, CulturalInterestsGalleryActivity.class);
+        Intent exploreCulturalInterestsIntent = new Intent(this, CulturalInterestsGalleryActivity2.class);
         exploreCulturalInterestsIntent.putExtra(STARTING_DATE, Integer.parseInt(textView1.getText().toString()));
         exploreCulturalInterestsIntent.putExtra(FINISHING_DATE, Integer.parseInt(textView2.getText().toString()));
 
@@ -265,7 +267,7 @@ public class TemporalActivity extends AppCompatActivity {
                 //                    +
                 //                    "(strafter(str(?beginningInstant), \"#\") AS ?date) " +
                 //                    "?place (strafter(str(?place), \"#\") AS ?localisation) \n ");
-                qb.append(" WHERE {?temporalEntity rdf:type owlTime:TemporalEntity ; \n ");
+                qb.append(" WHERE {?temporalEntity rdf:type :DigitalRepresentationAggregator ; \n ");
                 qb.append(" owlTime:hasBeginning ?beginningInstant . \n");
 
                 qb.append(" ?beginningInstant owlTime:inXSDDateTime ?startingDate } ");
