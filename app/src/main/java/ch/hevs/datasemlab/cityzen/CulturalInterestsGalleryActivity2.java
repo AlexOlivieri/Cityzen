@@ -36,6 +36,9 @@ public class CulturalInterestsGalleryActivity2 extends AppCompatActivity {
 
     private final String TAG = CulturalInterestsGalleryActivity.class.getSimpleName();
 
+    private int startingDate;
+    private int finishingDate;
+
     private String[] cursorColumnsTitle = {"_id", "Title", "Image"};
 
     private MatrixCursor cursorCulturalInterests = new MatrixCursor(cursorColumnsTitle);
@@ -57,8 +60,8 @@ public class CulturalInterestsGalleryActivity2 extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
 
-        int startingDate = extras.getInt(TemporalActivity.STARTING_DATE);
-        int finishingDate = extras.getInt(TemporalActivity.FINISHING_DATE);
+        startingDate = extras.getInt(TemporalActivity.STARTING_DATE);
+        finishingDate = extras.getInt(TemporalActivity.FINISHING_DATE);
 
         Toast.makeText(this, String.valueOf(startingDate) + " , " + String.valueOf(finishingDate), Toast.LENGTH_SHORT).show();
 
@@ -138,7 +141,7 @@ public class CulturalInterestsGalleryActivity2 extends AppCompatActivity {
 
                 qb.append(" ?instant owlTime:inXSDDateTime ?date . ");
 
-                qb.append(" FILTER ( ?date >= \"1950\" && ?date <= \"1980\") } ");
+                qb.append(" FILTER ( ?date >= \"" + startingDate + "\" && ?date <= \"" + finishingDate + "\") } ");
 
                 qb.append("ORDER BY ?date");
                 //qb.append(" LIMIT 1 ");
