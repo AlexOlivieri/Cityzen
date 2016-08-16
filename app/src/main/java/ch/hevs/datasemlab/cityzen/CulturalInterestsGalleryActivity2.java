@@ -1,13 +1,21 @@
 package ch.hevs.datasemlab.cityzen;
 
+import android.content.Intent;
 import android.database.MatrixCursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.eclipse.rdf4j.model.Value;
@@ -57,6 +65,27 @@ public class CulturalInterestsGalleryActivity2 extends AppCompatActivity {
         new GetCulturalInterests().execute();
 
         listView = (ListView) findViewById(R.id.list_view);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Intent intent = new Intent(getApplicationContext(), CulturalInterestDetailsActivity.class);
+                adapterView.getItemAtPosition(position);
+
+                TextView textView = (TextView) view.findViewById(R.id.text_view_cultural_item_title);
+                intent.putExtra(CityzenContracts.TITLE, textView.getText());
+
+                ImageView imageView = (ImageView) view.findViewById(R.id.image_view_cultural_interest_image);
+                Drawable drawable = imageView.getDrawable();
+                BitmapDrawable bitmapDrawable = ((BitmapDrawable) drawable);
+                Bitmap bitmap = bitmapDrawable .getBitmap();
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                byte[] imageInByte = stream.toByteArray();
+                intent.putExtra(CityzenContracts.IMAGE, imageInByte);
+                Log.i(TAG, String.valueOf(textView.getText()));
+                startActivity(intent);
+            }
+        });
 
 
 

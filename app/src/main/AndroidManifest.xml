@@ -19,7 +19,8 @@
         </activity>
         <activity android:name=".CulturalInterestsGalleryActivity" />
         <activity android:name=".CulturalInterestsGalleryActivityWithCursorLoader" />
-        <activity android:name=".CulturalInterestsGalleryActivity2"></activity>
+        <activity android:name=".CulturalInterestsGalleryActivity2" />
+        <activity android:name=".CulturalInterestDetailsActivity"></activity>
     </application>
 
 </manifest>

@@ -154,6 +154,8 @@ public class TemporalActivity extends AppCompatActivity {
 
     public void exploreCulturalInterests(View view){
         Intent exploreCulturalInterestsIntent = new Intent(this, CulturalInterestsGalleryActivity2.class);
+        Log.e(TAG + STARTING_DATE, textView1.getText().toString());
+        Log.e(TAG + FINISHING_DATE, textView2.getText().toString());
         exploreCulturalInterestsIntent.putExtra(STARTING_DATE, Integer.parseInt(textView1.getText().toString()));
         exploreCulturalInterestsIntent.putExtra(FINISHING_DATE, Integer.parseInt(textView2.getText().toString()));
 
