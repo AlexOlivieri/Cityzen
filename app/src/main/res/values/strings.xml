@@ -9,4 +9,7 @@
     <string name="cultural_item_title">Title</string>
     <string name="cultural_item_description">Description</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

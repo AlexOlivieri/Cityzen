@@ -22,8 +22,9 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
+    compile files('libs/xercesImplMod.jar')
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'org.eclipse.rdf4j:rdf4j-repository-sparql:1.0M2'
     compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
-    compile files('libs/xercesImplMod.jar')
+    compile 'com.android.support:support-v4:24.1.1'
 }
