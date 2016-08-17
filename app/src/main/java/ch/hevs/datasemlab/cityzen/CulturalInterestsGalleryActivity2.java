@@ -136,6 +136,9 @@ public class CulturalInterestsGalleryActivity2 extends AppCompatActivity {
                 qb.append(" ?digitalrepresentationAggregator edm:aggregatedCHO ?culturalInterest . \n");
                 qb.append(" ?digitalrepresentationAggregator edm:hasView ?digitalrepresentation . \n");
                 qb.append(" ?digitalrepresentation dcterms:hasPart ?digitalItem . \n");
+                qb.append(" { ?digitalrepresentation dc:format \"image/jpeg\" } UNION \n");
+                qb.append(" { ?digitalrepresentation dc:format \"image/png\" } UNION \n");
+                qb.append(" { ?digitalrepresentation dc:format \"application/pdf\" } . \n");
                 qb.append(" ?digitalItem schema:thumbnail_url ?image . \n");
                 qb.append(" ?digitalrepresentationAggregator owlTime:hasBeginning ?instant . \n");
 
