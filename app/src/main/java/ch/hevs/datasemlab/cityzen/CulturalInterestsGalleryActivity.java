@@ -49,8 +49,8 @@ public class CulturalInterestsGalleryActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
 
-        int startingDate = extras.getInt(TemporalActivity.STARTING_DATE);
-        int finishingDate = extras.getInt(TemporalActivity.FINISHING_DATE);
+        int startingDate = extras.getInt(CityzenContracts.STARTING_DATE);
+        int finishingDate = extras.getInt(CityzenContracts.FINISHING_DATE);
 
         Toast.makeText(this, String.valueOf(startingDate) + " , " + String.valueOf(finishingDate), Toast.LENGTH_SHORT).show();
 

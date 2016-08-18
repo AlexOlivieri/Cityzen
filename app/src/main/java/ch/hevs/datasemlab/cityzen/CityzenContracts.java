@@ -8,4 +8,7 @@ public class CityzenContracts {
     public static final String TITLE = "Title";
     public static final String DESCRIPTION = "Description";
     public static final String IMAGE = "Image";
+
+    public static final String STARTING_DATE = "starting_date";
+    public static final String FINISHING_DATE = "finishing_date";
 }

@@ -26,9 +26,6 @@ public class TemporalActivity extends AppCompatActivity {
 
     private final String TAG = TemporalActivity.class.getSimpleName();
 
-    public static final String STARTING_DATE = "starting_date";
-    public static final String FINISHING_DATE = "finishing_date";
-
     public static final String REPOSITORY_URL = "http://ec2-52-39-53-29.us-west-2.compute.amazonaws.com:8080/openrdf-sesame/repositories/CityZenDM";
 
     private int currentYear;
@@ -76,6 +73,8 @@ public class TemporalActivity extends AppCompatActivity {
 //                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
                 int chosenStartingDate = oldestStartingDate + progressValue;
 
+                Log.i(TAG + " ChosenStartingDate", String.valueOf(chosenStartingDate));
+
                 if (isLegalMove(chosenStartingDate)) {
                     textView1.setText(String.valueOf(chosenStartingDate));
                     seekBar.setProgress(seekBar.getProgress());
@@ -85,7 +84,7 @@ public class TemporalActivity extends AppCompatActivity {
             }
 
             private boolean isLegalMove(int chosenStartingDate) {
-                Log.i(TAG + " finishing time: ", String.valueOf(chosenStartingDate));
+                Log.i(TAG + " finishing time : ", String.valueOf(chosenStartingDate));
                 if (chosenStartingDate <= Integer.parseInt(textView2.getText().toString())) {
                     return true;
                 }
@@ -118,6 +117,8 @@ public class TemporalActivity extends AppCompatActivity {
                 seekBar.setMax(currentYear-oldestStartingDate);
 //                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
                 int chosenFinishingDate = currentYear-progressValue;
+
+                Log.i(TAG + " ChosenFinishingDate: ", String.valueOf(chosenFinishingDate));
 
                 if (isLegalMove(chosenFinishingDate)) {
                     textView2.setText(String.valueOf(chosenFinishingDate));
@@ -153,11 +154,14 @@ public class TemporalActivity extends AppCompatActivity {
     }
 
     public void exploreCulturalInterests(View view){
-        Intent exploreCulturalInterestsIntent = new Intent(this, CulturalInterestsGalleryActivity2.class);
-        Log.e(TAG + STARTING_DATE, textView1.getText().toString());
-        Log.e(TAG + FINISHING_DATE, textView2.getText().toString());
-        exploreCulturalInterestsIntent.putExtra(STARTING_DATE, Integer.parseInt(textView1.getText().toString()));
-        exploreCulturalInterestsIntent.putExtra(FINISHING_DATE, Integer.parseInt(textView2.getText().toString()));
+        //TODO
+        //Intent exploreCulturalInterestsIntent = new Intent(this, CulturalInterestsGalleryActivity2.class);
+        Intent exploreCulturalInterestsIntent = new Intent(this, CulturalInterestsGalleryActivity3.class);
+        Log.e(TAG + CityzenContracts.STARTING_DATE, textView1.getText().toString());
+        Log.e(TAG + CityzenContracts.FINISHING_DATE, textView2.getText().toString());
+        exploreCulturalInterestsIntent.putExtra(CityzenContracts.STARTING_DATE, Integer.parseInt(textView1.getText().toString()));
+        exploreCulturalInterestsIntent.putExtra(CityzenContracts.FINISHING_DATE, Integer.parseInt(textView2.getText().toString()));
+
 
         startActivity(exploreCulturalInterestsIntent);
     }

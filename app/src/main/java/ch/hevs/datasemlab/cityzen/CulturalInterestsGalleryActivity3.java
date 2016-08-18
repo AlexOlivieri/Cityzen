@@ -66,7 +66,16 @@ public class CulturalInterestsGalleryActivity3 extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position){
-            return "Page " + position;
+            switch (position){
+                case 0:
+                    return "Images";
+                case 1:
+                    return "Videos";
+                case 2:
+                    return "Audio";
+                default:
+                    return null;
+            }
         }
     }
 }
