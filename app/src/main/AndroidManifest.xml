@@ -20,8 +20,9 @@
         <activity android:name=".CulturalInterestsGalleryActivity" />
         <activity android:name=".CulturalInterestsGalleryActivityWithCursorLoader" />
         <activity android:name=".CulturalInterestsGalleryActivity2" />
-        <activity android:name=".CulturalInterestDetailsActivity" />
-        <activity android:name=".CulturalInterestsGalleryActivity3"></activity>
+        <activity android:name=".CulturalInterestImageDetailsActivity" />
+        <activity android:name=".CulturalInterestsGalleryActivity3" />
+        <activity android:name=".CulturalInterestVideoDetailsActivity"></activity>
     </application>
 
 </manifest>

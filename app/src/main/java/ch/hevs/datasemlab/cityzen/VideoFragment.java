@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.database.MatrixCursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -96,20 +93,20 @@ public class VideoFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), CulturalInterestDetailsActivity.class);
+                Intent intent = new Intent(getActivity(), CulturalInterestVideoDetailsActivity.class);
                 adapterView.getItemAtPosition(position);
 
                 TextView textView = (TextView) view.findViewById(R.id.text_view_cultural_item_title);
                 intent.putExtra(CityzenContracts.TITLE, textView.getText());
 
-                ImageView imageView = (ImageView) view.findViewById(R.id.image_view_cultural_interest_image);
-                Drawable drawable = imageView.getDrawable();
-                BitmapDrawable bitmapDrawable = ((BitmapDrawable) drawable);
-                Bitmap bitmap = bitmapDrawable .getBitmap();
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                byte[] imageInByte = stream.toByteArray();
-                intent.putExtra(CityzenContracts.IMAGE, imageInByte);
+//                ImageView imageView = (ImageView) view.findViewById(R.id.image_view_cultural_interest_image);
+//                Drawable drawable = imageView.getDrawable();
+//                BitmapDrawable bitmapDrawable = ((BitmapDrawable) drawable);
+//                Bitmap bitmap = bitmapDrawable .getBitmap();
+//                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+//                byte[] imageInByte = stream.toByteArray();
+//                intent.putExtra(CityzenContracts.IMAGE, imageInByte);
                 Log.i(TAG, String.valueOf(textView.getText()));
                 startActivity(intent);
             }

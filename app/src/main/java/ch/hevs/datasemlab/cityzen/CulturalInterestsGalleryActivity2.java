@@ -71,7 +71,7 @@ public class CulturalInterestsGalleryActivity2 extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(), CulturalInterestDetailsActivity.class);
+                Intent intent = new Intent(getApplicationContext(), CulturalInterestImageDetailsActivity.class);
                 adapterView.getItemAtPosition(position);
 
                 TextView textView = (TextView) view.findViewById(R.id.text_view_cultural_item_title);
