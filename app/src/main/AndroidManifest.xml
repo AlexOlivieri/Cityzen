@@ -3,6 +3,7 @@
     package="ch.hevs.datasemlab.cityzen">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -22,7 +23,8 @@
         <activity android:name=".CulturalInterestsGalleryActivity2" />
         <activity android:name=".CulturalInterestImageDetailsActivity" />
         <activity android:name=".CulturalInterestsGalleryActivity3" />
-        <activity android:name=".CulturalInterestVideoDetailsActivity"></activity>
+        <activity android:name=".CulturalInterestVideoDetailsActivity" />
+        <activity android:name=".CulturalInterestAudioDetailsActivity"></activity>
     </application>
 
 </manifest>

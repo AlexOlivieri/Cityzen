@@ -1,14 +1,18 @@
 package ch.hevs.datasemlab.cityzen;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -18,42 +22,56 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
-public class CulturalInterestVideoDetailsActivity extends AppCompatActivity {
+import java.io.IOException;
 
-    private static final String TAG = CulturalInterestVideoDetailsActivity.class.getSimpleName();
+public class CulturalInterestAudioDetailsActivity extends AppCompatActivity{
+
+    private static final String TAG = CulturalInterestAudioDetailsActivity.class.getSimpleName();
 
     private String title;
 
     private TextView textViewDescription;
-    private VideoView videoView;
+    //private VideoView videoView;
+
+    private MediaPlayer audioPlayer;
 
     private MediaController videoController;
+
+    private String audio;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cultural_interest_video_details);
+        setContentView(R.layout.activity_cultural_interest_audio_details);
 
         Toast.makeText(this, TAG, Toast.LENGTH_SHORT).show();
 
         Bundle extras = getIntent().getExtras();
 
         title = extras.getString(CityzenContracts.TITLE);
-        //byte[] imageByte = extras.getByteArray(CityzenContracts.IMAGE);
+        byte[] imageByte = extras.getByteArray(CityzenContracts.IMAGE);
 
         TextView textViewTitle = (TextView) findViewById(R.id.text_view_title_details);
         textViewDescription = (TextView) findViewById(R.id.text_view_description_details);
-        videoView = (VideoView) findViewById(R.id.video_view_details);
-
-        videoController = new MediaController(this);
-        videoView.setMediaController(videoController);
 
 
         textViewTitle.setText(title);
-//        Bitmap imageBitmap = BitmapFactory.decodeByteArray(imageByte, 0, imageByte.length);
-//        imageView.setImageBitmap(Bitmap.createScaledBitmap(imageBitmap, 800, 600, false));
+
+        ImageView imageView = (ImageView) findViewById(R.id.image_view_audio);
+        Bitmap imageBitmap = BitmapFactory.decodeByteArray(imageByte, 0, imageByte.length);
+        imageView.setImageBitmap(Bitmap.createScaledBitmap(imageBitmap, 800, 600, false));
 
         new GetCulturalInterestsDescription().execute(title);
+
+        Log.i(TAG, textViewDescription.getText().toString());
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        audioPlayer.release();
+        audioPlayer = null;
     }
 
     private class GetCulturalInterestsDescription extends AsyncTask<String, Void, TupleQueryResult> {
@@ -79,7 +97,7 @@ public class CulturalInterestVideoDetailsActivity extends AppCompatActivity {
                 qb.append("PREFIX dc: <http://purl.org/dc/elements/1.1/> \n");
                 qb.append("PREFIX dcterms: <http://purl.org/dc/terms/> \n");
 
-                qb.append(" SELECT DISTINCT ?description ?video \n ");
+                qb.append(" SELECT DISTINCT ?description ?audio \n ");
 
                 qb.append(" WHERE {?culturalInterest dc:title ");
                 qb.append("\"" +title + "\" . \n ");
@@ -87,7 +105,7 @@ public class CulturalInterestVideoDetailsActivity extends AppCompatActivity {
                 qb.append(" ?digitalrepresentationAggregator edm:aggregatedCHO ?culturalInterest . \n");
                 qb.append(" ?digitalrepresentationAggregator edm:hasView ?digitalrepresentation . \n");
                 qb.append(" ?digitalrepresentation dcterms:hasPart ?digitalItem . \n");
-                qb.append(" ?digitalItem schema:image_url ?video . }\n");
+                qb.append(" ?digitalItem schema:image_url ?audio . }\n");
 
                 Log.i(TAG + " query: ", qb.toString());
 
@@ -107,16 +125,39 @@ public class CulturalInterestVideoDetailsActivity extends AppCompatActivity {
                 BindingSet bs = result.next();
 
                 Value descriptionValue = bs.getValue("description");
-                Value videoValue = bs.getValue("video");
+                Value audioValue = bs.getValue("audio");
 
                 String description = descriptionValue.stringValue();
-                String video = videoValue.stringValue();
+                audio = audioValue.stringValue();
 
-                Uri videoURI = Uri.parse(video);
+                Log.i(TAG + "audio", audio);
+
+                Uri audioURI = Uri.parse(audio);
 
                 textViewDescription.setText(description);
-                videoView.setVideoURI(videoURI);
-                videoView.start();
+
+                try {
+                    audioPlayer = new MediaPlayer();
+                    audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    //audioPlayer.setDisplay(audioHolder);
+                    audioPlayer.setDataSource(audio);
+                    audioPlayer.prepareAsync();
+                    //audioPlayer.setOnPreparedListener();
+                    audioPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener(){
+                        @Override
+                        public void onPrepared(MediaPlayer mediaPlayer){
+                            audioPlayer.start();
+                        }
+                    });
+
+
+                }catch(IllegalArgumentException e){
+                    e.printStackTrace();
+                    System.err.println("The link to the audio file is not a valid URL");
+                }catch (IOException e){
+                    e.printStackTrace();
+                    System.err.println("Problem when getting the stream");
+                }
             }
         }
     }
