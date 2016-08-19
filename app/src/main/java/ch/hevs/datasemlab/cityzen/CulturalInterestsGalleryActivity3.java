@@ -39,7 +39,7 @@ public class CulturalInterestsGalleryActivity3 extends AppCompatActivity {
 
     public static class CulturalInterestsPagerAdapter extends FragmentPagerAdapter{
 
-        private static int PAGES_NUMBER = 3;
+        private static int PAGES_NUMBER = 4;
 
         public CulturalInterestsPagerAdapter(FragmentManager fragmentManager){
             super(fragmentManager);
@@ -59,6 +59,8 @@ public class CulturalInterestsGalleryActivity3 extends AppCompatActivity {
                     return VideoFragment.newInstance(mStartingDate, mFinishingDate);
                 case 2:
                     return AudioFragment.newInstance(mStartingDate, mFinishingDate);
+                case 3:
+                    return EmptyTestFragment.newInstance();
                 default:
                     return null;
             }
@@ -73,6 +75,8 @@ public class CulturalInterestsGalleryActivity3 extends AppCompatActivity {
                     return "Videos";
                 case 2:
                     return "Audio";
+                case 3:
+                    return "Test";
                 default:
                     return null;
             }

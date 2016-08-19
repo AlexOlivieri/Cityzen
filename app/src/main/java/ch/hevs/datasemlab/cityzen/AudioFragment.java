@@ -89,6 +89,8 @@ public class AudioFragment extends Fragment {
 
         listView = (ListView) view.findViewById(R.id.list_view);
 
+        listView.setAdapter(mAdapter);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {

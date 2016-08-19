@@ -36,9 +36,6 @@ public class TemporalActivity extends AppCompatActivity {
     private TextView textView2;
 
     private int oldestStartingDate;
-    private int newestStartingDate;
-    private int oldestFinishingDate;
-    private int newestFinishingDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +70,7 @@ public class TemporalActivity extends AppCompatActivity {
 //                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
                 int chosenStartingDate = oldestStartingDate + progressValue;
 
-                Log.i(TAG + " ChosenStartingDate", String.valueOf(chosenStartingDate));
+//                Log.i(TAG + " ChosenStartingDate", String.valueOf(chosenStartingDate));
 
                 if (isLegalMove(chosenStartingDate)) {
                     textView1.setText(String.valueOf(chosenStartingDate));
@@ -84,7 +81,7 @@ public class TemporalActivity extends AppCompatActivity {
             }
 
             private boolean isLegalMove(int chosenStartingDate) {
-                Log.i(TAG + " finishing time : ", String.valueOf(chosenStartingDate));
+ //               Log.i(TAG + " finishing time : ", String.valueOf(chosenStartingDate));
                 if (chosenStartingDate <= Integer.parseInt(textView2.getText().toString())) {
                     return true;
                 }
@@ -96,13 +93,13 @@ public class TemporalActivity extends AppCompatActivity {
             // TODO
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                Log.i(TAG + "BarStart:onStart", "To Define");
+//                Log.i(TAG + "BarStart:onStart", "To Define");
             }
 
             // TODO
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Log.i(TAG + "BarStart:onStop", "To Define");
+//                Log.i(TAG + "BarStart:onStop", "To Define");
             }
         });
 
@@ -118,7 +115,7 @@ public class TemporalActivity extends AppCompatActivity {
 //                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
                 int chosenFinishingDate = currentYear-progressValue;
 
-                Log.i(TAG + " ChosenFinishingDate: ", String.valueOf(chosenFinishingDate));
+///                Log.i(TAG + " ChosenFinishingDate: ", String.valueOf(chosenFinishingDate));
 
                 if (isLegalMove(chosenFinishingDate)) {
                     textView2.setText(String.valueOf(chosenFinishingDate));
@@ -140,13 +137,13 @@ public class TemporalActivity extends AppCompatActivity {
             // TODO
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                Log.i(TAG + "BarFinish:onStart", "To Define");
+//                Log.i(TAG + "BarFinish:onStart", "To Define");
             }
 
             // TODO
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Log.i(TAG + "BarFinish:onStop", "To Define");
+//                Log.i(TAG + "BarFinish:onStop", "To Define");
             }
         });
 
@@ -157,8 +154,8 @@ public class TemporalActivity extends AppCompatActivity {
         //TODO
         //Intent exploreCulturalInterestsIntent = new Intent(this, CulturalInterestsGalleryActivity2.class);
         Intent exploreCulturalInterestsIntent = new Intent(this, CulturalInterestsGalleryActivity3.class);
-        Log.e(TAG + CityzenContracts.STARTING_DATE, textView1.getText().toString());
-        Log.e(TAG + CityzenContracts.FINISHING_DATE, textView2.getText().toString());
+//        Log.e(TAG + CityzenContracts.STARTING_DATE, textView1.getText().toString());
+//        Log.e(TAG + CityzenContracts.FINISHING_DATE, textView2.getText().toString());
         exploreCulturalInterestsIntent.putExtra(CityzenContracts.STARTING_DATE, Integer.parseInt(textView1.getText().toString()));
         exploreCulturalInterestsIntent.putExtra(CityzenContracts.FINISHING_DATE, Integer.parseInt(textView2.getText().toString()));
 
@@ -306,60 +303,4 @@ public class TemporalActivity extends AppCompatActivity {
             textView2.setText(String.valueOf(currentYear));
         }
     }
-
-//    private class GetNewestStartingDateTask extends AsyncTask<String, Void, String>{
-//
-//        @Override
-//        protected String doInBackground(String... strings) {
-//
-//            Repository repo = new SPARQLRepository(strings[0]);
-//            repo.initialize();
-//
-//            RepositoryConnection conn = repo.getConnection();
-//
-//            String date = null;
-//
-//            try {
-//                StringBuilder qb = new StringBuilder();
-//
-//                qb.append("PREFIX : <http://www.hevs.ch/datasemlab/cityzen/schema#> \n");
-//                qb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-//                qb.append("PREFIX owlTime: <http://www.w3.org/TR/owl-time#> \n");
-//
-//                qb.append(" SELECT DISTINCT ?startingDate \n ");
-//                //                    +
-//                //                    "(strafter(str(?beginningInstant), \"#\") AS ?date) " +
-//                //                    "?place (strafter(str(?place), \"#\") AS ?localisation) \n ");
-//                qb.append(" WHERE {?temporalEntity rdf:type owlTime:TemporalEntity ; \n ");
-//                qb.append(" owlTime:hasBeginning ?beginningInstant . \n");
-//
-//                qb.append(" ?beginningInstant owlTime:inXSDDateTime ?startingDate } ");
-//
-//                qb.append("ORDER BY DESC(?startingDate)");
-//                qb.append(" LIMIT 1 ");
-//
-//                TupleQueryResult result =
-//                        conn.prepareTupleQuery(QueryLanguage.SPARQL, qb.toString()).evaluate();
-//
-//                while (result.hasNext()) {
-//                    BindingSet bs = result.next();
-//                    Value dateValue = bs.getValue("startingDate");
-//                    date = dateValue.stringValue();
-//
-//                }
-//                Log.i(TAG + "date: ", date);
-//            } finally {
-//                conn.close();
-//            }
-//            return date;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(String s) {
-//            super.onPostExecute(s);
-//            newestStartingDate = Integer.parseInt(s);
-//            seekBarFinish.setMax(newestStartingDate);
-//            textView2.setText(s);
-//        }
-//    }
 }
