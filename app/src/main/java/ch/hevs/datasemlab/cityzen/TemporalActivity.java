@@ -1,12 +1,13 @@
 package ch.hevs.datasemlab.cityzen;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +37,12 @@ public class TemporalActivity extends AppCompatActivity {
     private TextView textView2;
 
     private int oldestStartingDate;
+    private String oldestDate;
+
+    private int startingDateFromPreferences;
+    private int finishingDateFromPreferences;
+
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,26 +50,41 @@ public class TemporalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_temporal);
 
         seekBarStart = (SeekBar) findViewById(R.id.seek_bar_start);
-        //seekBarStart.setMax();
         seekBarFinish = (SeekBar) findViewById(R.id.seek_bar_finish);
         textView1 = (TextView) findViewById(R.id.edit_text_start);
         textView2 = (TextView) findViewById(R.id.edit_text_finish);
-        //textView2.setText(getCurrentYear());
-        Button button = (Button) findViewById(R.id.button_go);
 
         currentYear = getCurrentYear();
 
+        sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        startingDateFromPreferences  = sharedPreferences.getInt(CityzenContracts.STARTING_DATE, -1);
+        finishingDateFromPreferences = sharedPreferences.getInt(CityzenContracts.FINISHING_DATE, -1);
+        Log.i(TAG, startingDateFromPreferences + " - " + finishingDateFromPreferences);
 
 
-        //sendStartingDateQuery(textView1, cityzenURL);
-
-        //new GetNewestStartingDateTask().execute(cityzenURL);
         new GetOldestStartingDateTask().execute(REPOSITORY_URL);
+
+        if(startingDateFromPreferences != -1 && finishingDateFromPreferences != -1){
+
+            oldestStartingDate = sharedPreferences.getInt(oldestDate, -1);
+
+            Log.i(TAG, "OldestStartingDate: " + oldestStartingDate);
+
+            seekBarStart.setMax(currentYear - oldestStartingDate);
+            seekBarFinish.setMax(currentYear - oldestStartingDate);
+            Log.i(TAG, "Seek Start Max: " + seekBarStart.getMax());
+            Log.i(TAG, "Seek Finish Max: " + seekBarFinish.getMax());
+
+            seekBarStart.setProgress(startingDateFromPreferences-oldestStartingDate);
+            seekBarFinish.setProgress(currentYear-finishingDateFromPreferences);
+            Log.i(TAG, "Set Starting Progress: " + String.valueOf(currentYear-startingDateFromPreferences));
+            Log.i(TAG, "Set Finishing Progress: " + String.valueOf(currentYear-finishingDateFromPreferences));
+            Log.i(TAG, "Starting Progress: " + String.valueOf(seekBarStart.getProgress()));
+            Log.i(TAG, "Finishing Progress: " + String.valueOf(seekBarFinish.getProgress()));
+        }
 
 
         seekBarStart.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            int progress = oldestStartingDate;
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
@@ -151,13 +173,28 @@ public class TemporalActivity extends AppCompatActivity {
     }
 
     public void exploreCulturalInterests(View view){
-        //TODO
+
+        int startingDate = Integer.parseInt(textView1.getText().toString());
+        int finishingDate = Integer.parseInt(textView2.getText().toString());
+
+        sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(CityzenContracts.STARTING_DATE, oldestStartingDate + seekBarStart.getProgress());
+        editor.putInt(CityzenContracts.FINISHING_DATE, currentYear - seekBarFinish.getProgress());
+        editor.commit();
+
+
+        Log.i(TAG, "Intent Starting Progress: " + String.valueOf(seekBarStart.getProgress()));
+        Log.i(TAG, "Intent Starting Max: " + String.valueOf(seekBarStart.getMax()));
+        Log.i(TAG, "Intent Finishing Progress: " + String.valueOf(seekBarFinish.getProgress()));
+        Log.i(TAG, "Intent Finishing Max: " + String.valueOf(seekBarFinish.getMax()));
+
         //Intent exploreCulturalInterestsIntent = new Intent(this, CulturalInterestsGalleryActivity2.class);
         Intent exploreCulturalInterestsIntent = new Intent(this, CulturalInterestsGalleryActivity3.class);
 //        Log.e(TAG + CityzenContracts.STARTING_DATE, textView1.getText().toString());
 //        Log.e(TAG + CityzenContracts.FINISHING_DATE, textView2.getText().toString());
-        exploreCulturalInterestsIntent.putExtra(CityzenContracts.STARTING_DATE, Integer.parseInt(textView1.getText().toString()));
-        exploreCulturalInterestsIntent.putExtra(CityzenContracts.FINISHING_DATE, Integer.parseInt(textView2.getText().toString()));
+        exploreCulturalInterestsIntent.putExtra(CityzenContracts.STARTING_DATE, startingDate);
+        exploreCulturalInterestsIntent.putExtra(CityzenContracts.FINISHING_DATE, finishingDate);
 
 
         startActivity(exploreCulturalInterestsIntent);
@@ -298,9 +335,20 @@ public class TemporalActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             oldestStartingDate = Integer.parseInt(s);
-            Log.i(TAG + "oldestStartingDate", String.valueOf(oldestStartingDate));
-            textView1.setText(s);
-            textView2.setText(String.valueOf(currentYear));
+            Log.i(TAG + "oldestStartingDate", "OnPostExecute " + String.valueOf(oldestStartingDate));
+
+            sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(oldestDate, oldestStartingDate);
+            editor.commit();
+
+            if(startingDateFromPreferences == -1 || finishingDateFromPreferences == -1 ){
+                textView1.setText(s);
+                textView2.setText(String.valueOf(currentYear));
+            }else{
+                textView1.setText(String.valueOf(startingDateFromPreferences));
+                textView2.setText(String.valueOf(finishingDateFromPreferences));
+            }
         }
     }
 }

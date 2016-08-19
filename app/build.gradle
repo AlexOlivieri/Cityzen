@@ -27,4 +27,5 @@ dependencies {
     compile 'org.eclipse.rdf4j:rdf4j-repository-sparql:1.0M2'
     compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
     compile 'com.android.support:support-v4:24.1.1'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
 }
