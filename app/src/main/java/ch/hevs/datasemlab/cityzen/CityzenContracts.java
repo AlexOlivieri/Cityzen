@@ -11,4 +11,7 @@ public class CityzenContracts {
 
     public static final String STARTING_DATE = "starting_date";
     public static final String FINISHING_DATE = "finishing_date";
+
+    public static final String APPLICATION_PREFERENCES = "application_preferences";
+
 }

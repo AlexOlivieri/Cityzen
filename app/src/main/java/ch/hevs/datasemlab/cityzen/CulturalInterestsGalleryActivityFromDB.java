@@ -14,9 +14,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class CulturalInterestsGalleryActivity3 extends AppCompatActivity {
+public class CulturalInterestsGalleryActivityFromDB extends AppCompatActivity {
 
-    private final String TAG = CulturalInterestsGalleryActivity3.class.getSimpleName();
+    private final String TAG = CulturalInterestsGalleryActivityFromDB.class.getSimpleName();
 
     private static int mStartingDate;
     private static int mFinishingDate;
@@ -26,7 +26,7 @@ public class CulturalInterestsGalleryActivity3 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cultural_interests_gallery3);
+        setContentView(R.layout.activity_cultural_interests_gallery_from_db);
 
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();

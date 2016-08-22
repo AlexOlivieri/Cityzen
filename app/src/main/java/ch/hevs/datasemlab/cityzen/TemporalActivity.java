@@ -9,7 +9,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +39,7 @@ public class TemporalActivity extends AppCompatActivity {
     private TextView textView1;
     private SeekBar seekBarFinish;
     private TextView textView2;
+    private Button button;
 
     private int oldestStartingDate;
     private String oldestDate;
@@ -46,6 +49,7 @@ public class TemporalActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
 
+    private ConnectivityManager check;
     private boolean isConnected = false;
 
     @Override
@@ -53,19 +57,238 @@ public class TemporalActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temporal);
 
-        seekBarStart = (SeekBar) findViewById(R.id.seek_bar_start);
-        seekBarFinish = (SeekBar) findViewById(R.id.seek_bar_finish);
-        textView1 = (TextView) findViewById(R.id.edit_text_start);
-        textView2 = (TextView) findViewById(R.id.edit_text_finish);
+        Log.i(TAG, "On Create");
 
-        currentYear = getCurrentYear();
+        //sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.getSharedPreferences(CityzenContracts.APPLICATION_PREFERENCES, Context.MODE_PRIVATE);
 
-        sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
-        startingDateFromPreferences  = sharedPreferences.getInt(CityzenContracts.STARTING_DATE, -1);
+        startingDateFromPreferences = sharedPreferences.getInt(CityzenContracts.STARTING_DATE, -1);
         finishingDateFromPreferences = sharedPreferences.getInt(CityzenContracts.FINISHING_DATE, -1);
         Log.i(TAG, startingDateFromPreferences + " - " + finishingDateFromPreferences);
 
-        ConnectivityManager check = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+
+        ///////////////////////////////////////////////////////////////////////////////
+        //
+        // If the data have been already chosen, and we do not waant to modify them,
+        // we retrieve the data from the content provider.
+        //
+        ///////////////////////////////////////////////////////////////////////////////
+        if (startingDateFromPreferences != -1 && finishingDateFromPreferences != -1) {
+
+            Log.i(TAG, "Date from Preferences: " + startingDateFromPreferences + " - " + finishingDateFromPreferences);
+
+            Intent intent = new Intent(this, CulturalInterestsGalleryActivityFromDB.class);
+            intent.putExtra(CityzenContracts.STARTING_DATE, startingDateFromPreferences);
+            intent.putExtra(CityzenContracts.FINISHING_DATE, finishingDateFromPreferences);
+
+            startActivity(intent);
+        }else {
+
+            seekBarStart = (SeekBar) findViewById(R.id.seek_bar_start);
+            seekBarFinish = (SeekBar) findViewById(R.id.seek_bar_finish);
+            textView1 = (TextView) findViewById(R.id.edit_text_start);
+            textView2 = (TextView) findViewById(R.id.edit_text_finish);
+
+            button = (Button) findViewById(R.id.button_go);
+            Log.i(TAG, "Button: " + String.valueOf(button.isClickable()));
+
+            currentYear = getCurrentYear();
+
+
+            check = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo[] info = check.getAllNetworkInfo();
+            for (int i = 0; i < info.length; i++) {
+                if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+                    isConnected = true;
+                    Log.i(TAG, "Internet is connected");
+                    button.setClickable(true);
+                    break;
+                } else {
+                    Log.i(TAG, "Internet is not connected");
+                    button.setClickable(false);
+                }
+            }
+
+            if (isConnected) {
+                //TODO perform all tasks from internet
+                new GetOldestStartingDateTask().execute(REPOSITORY_URL);
+            } else {
+                //TODO Take info from SQLite if presents
+                Toast.makeText(this, "Internet is not connected", Toast.LENGTH_SHORT).show();
+            }
+
+
+            if (startingDateFromPreferences != -1 && finishingDateFromPreferences != -1) {
+
+                oldestStartingDate = sharedPreferences.getInt(oldestDate, -1);
+
+                Log.i(TAG, "OldestStartingDate: " + oldestStartingDate);
+
+                seekBarStart.setMax(currentYear - oldestStartingDate);
+                seekBarFinish.setMax(currentYear - oldestStartingDate);
+
+                ////////////////////////////////////////////////////////////////////////
+                /// The set progress for the two bars works differently
+                /// - SeekBarStart must be set from the subtracting: STARTING CHOSEN - OLDEST
+                /// - SeekBarFinish must be set from the subtracting: CURRENT YEAR - FINISHING CHOSEN
+                ////////////////////////////////////////////////////////////////////////
+                seekBarStart.setProgress(startingDateFromPreferences - oldestStartingDate);
+                seekBarFinish.setProgress(currentYear - finishingDateFromPreferences);
+            }
+
+
+            if (!isConnected) {
+                seekBarStart.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        return true;
+                    }
+                });
+
+                seekBarFinish.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        return true;
+                    }
+                });
+            }
+
+            seekBarStart.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+
+                    check = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkInfo[] info = check.getAllNetworkInfo();
+                    for (int i = 0; i < info.length; i++) {
+                        if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+                            isConnected = true;
+                            Toast.makeText(getApplicationContext(), "Internet is connected", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    if (isConnected) {
+                        seekBar.setMax(currentYear - oldestStartingDate);
+                        //                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
+                        int chosenStartingDate = oldestStartingDate + progressValue;
+
+                        //                Log.i(TAG + " ChosenStartingDate", String.valueOf(chosenStartingDate));
+
+                        if (isLegalMove(chosenStartingDate)) {
+                            textView1.setText(String.valueOf(chosenStartingDate));
+                            seekBar.setProgress(seekBar.getProgress());
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Starting Date can not be successive to the Finishing Date", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        //TODO Take info from SQLite if presents
+                        Toast.makeText(getApplicationContext(), "Internet is not connected", Toast.LENGTH_SHORT).show();
+                    }
+
+
+                }
+
+                private boolean isLegalMove(int chosenStartingDate) {
+                    //               Log.i(TAG + " finishing time : ", String.valueOf(chosenStartingDate));
+                    if (chosenStartingDate <= Integer.parseInt(textView2.getText().toString())) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
+                // TODO
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    //                Log.i(TAG + "BarStart:onStart", "To Define");
+                }
+
+                // TODO
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    //                Log.i(TAG + "BarStart:onStop", "To Define");
+                }
+            });
+
+            //int maxFinish = oldestFinishingDate - newestFinishingDate;
+            //seekBarFinish.setMax(maxFinish);
+
+            seekBarFinish.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+
+                    check = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkInfo[] info = check.getAllNetworkInfo();
+                    for (int i = 0; i < info.length; i++) {
+                        if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+                            isConnected = true;
+                            Toast.makeText(getApplicationContext(), "Internet is connected", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    if (isConnected) {
+
+                        seekBar.setMax(currentYear - oldestStartingDate);
+                        //                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
+                        int chosenFinishingDate = currentYear - progressValue;
+
+                        ///                Log.i(TAG + " ChosenFinishingDate: ", String.valueOf(chosenFinishingDate));
+
+                        if (isLegalMove(chosenFinishingDate)) {
+                            textView2.setText(String.valueOf(chosenFinishingDate));
+                            seekBar.setProgress(seekBar.getProgress());
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Finishing Date can not be antecedent to the Starting Date", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        //TODO Take info from SQLite if presents
+                        Toast.makeText(getApplicationContext(), "Internet is not connected", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                private boolean isLegalMove(int chosenFinishingValue) {
+                    if ((seekBarStart == null) || (chosenFinishingValue >= Integer.parseInt(textView1.getText().toString()))) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
+                // TODO
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    //                Log.i(TAG + "BarFinish:onStart", "To Define");
+                }
+
+                // TODO
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    //                Log.i(TAG + "BarFinish:onStop", "To Define");
+                }
+            });
+
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        Log.i(TAG, "On Pause");
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        Log.i(TAG, "On Resume");
+    }
+
+    public void exploreCulturalInterests(View view){
+
+        check = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo[] info = check.getAllNetworkInfo();
         for (int i = 0; i<info.length; i++){
             if (info[i].getState() == NetworkInfo.State.CONNECTED){
@@ -74,146 +297,14 @@ public class TemporalActivity extends AppCompatActivity {
             }
         }
 
-        if(isConnected){
-            //TODO perform all tasks from internet
-            new GetOldestStartingDateTask().execute(REPOSITORY_URL);
-        }
-        else{
-            //TODO Take info from SQLite if presents
-            Toast.makeText(this, "Internet is not connected", Toast.LENGTH_SHORT).show();
-        }
-
-
-
-        if(startingDateFromPreferences != -1 && finishingDateFromPreferences != -1){
-
-            oldestStartingDate = sharedPreferences.getInt(oldestDate, -1);
-
-            Log.i(TAG, "OldestStartingDate: " + oldestStartingDate);
-
-            seekBarStart.setMax(currentYear - oldestStartingDate);
-            seekBarFinish.setMax(currentYear - oldestStartingDate);
-
-            ////////////////////////////////////////////////////////////////////////
-            /// The set progress for the two bars works differently
-            /// - SeekBarStart must be set from the subtracting: STARTING CHOSEN - OLDEST
-            /// - SeekBarFinish must be set from the subtracting: CURRENT YEAR - FINISHING CHOSEN
-            ////////////////////////////////////////////////////////////////////////
-            seekBarStart.setProgress(startingDateFromPreferences-oldestStartingDate);
-            seekBarFinish.setProgress(currentYear-finishingDateFromPreferences);
-        }
-
-
-        seekBarStart.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
-
-                if(isConnected){
-                    seekBar.setMax(currentYear - oldestStartingDate);
-//                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
-                    int chosenStartingDate = oldestStartingDate + progressValue;
-
-//                Log.i(TAG + " ChosenStartingDate", String.valueOf(chosenStartingDate));
-
-                    if (isLegalMove(chosenStartingDate)) {
-                        textView1.setText(String.valueOf(chosenStartingDate));
-                        seekBar.setProgress(seekBar.getProgress());
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Starting Date can not be successive to the Finishing Date", Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    //TODO Take info from SQLite if presents
-                    Toast.makeText(getApplicationContext(), "Internet is not connected", Toast.LENGTH_SHORT).show();
-                }
-
-
-            }
-
-            private boolean isLegalMove(int chosenStartingDate) {
- //               Log.i(TAG + " finishing time : ", String.valueOf(chosenStartingDate));
-                if (chosenStartingDate <= Integer.parseInt(textView2.getText().toString())) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-
-            // TODO
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-//                Log.i(TAG + "BarStart:onStart", "To Define");
-            }
-
-            // TODO
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-//                Log.i(TAG + "BarStart:onStop", "To Define");
-            }
-        });
-
-        //int maxFinish = oldestFinishingDate - newestFinishingDate;
-        //seekBarFinish.setMax(maxFinish);
-
-        seekBarFinish.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
-
-                if(isConnected) {
-
-                    seekBar.setMax(currentYear - oldestStartingDate);
-                    //                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
-                    int chosenFinishingDate = currentYear - progressValue;
-
-                    ///                Log.i(TAG + " ChosenFinishingDate: ", String.valueOf(chosenFinishingDate));
-
-                    if (isLegalMove(chosenFinishingDate)) {
-                        textView2.setText(String.valueOf(chosenFinishingDate));
-                        seekBar.setProgress(seekBar.getProgress());
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Finishing Date can not be antecedent to the Starting Date", Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    //TODO Take info from SQLite if presents
-                    Toast.makeText(getApplicationContext(), "Internet is not connected", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            private boolean isLegalMove( int chosenFinishingValue) {
-                if ((seekBarStart == null) || (chosenFinishingValue >= Integer.parseInt(textView1.getText().toString()))) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-
-            // TODO
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-//                Log.i(TAG + "BarFinish:onStart", "To Define");
-            }
-
-            // TODO
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-//                Log.i(TAG + "BarFinish:onStop", "To Define");
-            }
-        });
-
-
-    }
-
-    public void exploreCulturalInterests(View view){
-
         if(isConnected) {
 
             int startingDate = Integer.parseInt(textView1.getText().toString());
             int finishingDate = Integer.parseInt(textView2.getText().toString());
 
-            sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+            //sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferences = this.getSharedPreferences(CityzenContracts.APPLICATION_PREFERENCES, Context.MODE_PRIVATE);
+
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt(CityzenContracts.STARTING_DATE, oldestStartingDate + seekBarStart.getProgress());
             editor.putInt(CityzenContracts.FINISHING_DATE, currentYear - seekBarFinish.getProgress());
@@ -378,7 +469,8 @@ public class TemporalActivity extends AppCompatActivity {
             oldestStartingDate = Integer.parseInt(s);
             Log.i(TAG + "oldestStartingDate", "OnPostExecute " + String.valueOf(oldestStartingDate));
 
-            sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+            //sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getSharedPreferences(CityzenContracts.APPLICATION_PREFERENCES, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt(oldestDate, oldestStartingDate);
             editor.commit();
