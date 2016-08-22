@@ -2,11 +2,14 @@ package ch.hevs.datasemlab.cityzen;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -52,10 +55,49 @@ public class TemporalActivity extends AppCompatActivity {
     private ConnectivityManager check;
     private boolean isConnected = false;
 
+    private IntentFilter networkingFilter;
+
+    public NetworkChangeBroadcastReceiver networkChangeBroadcastReceiver;
+
+    Handler networkChangeHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg){
+            Bundle bundle = msg.getData();
+            boolean networkState = bundle.getBoolean(CityzenContracts.NETWORK_STATE);
+            if(networkState){
+                button.setClickable(networkState);
+                seekBarStart.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        return false;
+                    }
+                });
+
+                seekBarFinish.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        return false;
+                    }
+                });
+                new GetOldestStartingDateTask().execute(REPOSITORY_URL);
+            }
+            Toast.makeText(getApplicationContext(), String.valueOf(networkState), Toast.LENGTH_SHORT).show();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temporal);
+
+        /////////////////////////////////////////////////////////////////
+        ///             Receiver for Networking Changes
+        /////////////////////////////////////////////////////////////////
+        networkingFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        networkChangeBroadcastReceiver = new NetworkChangeBroadcastReceiver(networkChangeHandler);
+        registerReceiver(networkChangeBroadcastReceiver, networkingFilter);
+
+
 
         Log.i(TAG, "On Create");
 
@@ -64,7 +106,7 @@ public class TemporalActivity extends AppCompatActivity {
 
         startingDateFromPreferences = sharedPreferences.getInt(CityzenContracts.STARTING_DATE, -1);
         finishingDateFromPreferences = sharedPreferences.getInt(CityzenContracts.FINISHING_DATE, -1);
-        Log.i(TAG, startingDateFromPreferences + " - " + finishingDateFromPreferences);
+//        Log.i(TAG, startingDateFromPreferences + " - " + finishingDateFromPreferences);
 
 
 
@@ -74,6 +116,32 @@ public class TemporalActivity extends AppCompatActivity {
         // we retrieve the data from the content provider.
         //
         ///////////////////////////////////////////////////////////////////////////////
+
+
+        seekBarStart = (SeekBar) findViewById(R.id.seek_bar_start);
+        seekBarFinish = (SeekBar) findViewById(R.id.seek_bar_finish);
+        textView1 = (TextView) findViewById(R.id.edit_text_start);
+        textView2 = (TextView) findViewById(R.id.edit_text_finish);
+
+        button = (Button) findViewById(R.id.button_go);
+        Log.i(TAG, "Button: " + String.valueOf(button.isClickable()));
+
+        currentYear = getCurrentYear();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        Log.i(TAG, "On Pause");
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        Log.i(TAG, "On Resume");
+
         if (startingDateFromPreferences != -1 && finishingDateFromPreferences != -1) {
 
             Log.i(TAG, "Date from Preferences: " + startingDateFromPreferences + " - " + finishingDateFromPreferences);
@@ -85,60 +153,32 @@ public class TemporalActivity extends AppCompatActivity {
             startActivity(intent);
         }else {
 
-            seekBarStart = (SeekBar) findViewById(R.id.seek_bar_start);
-            seekBarFinish = (SeekBar) findViewById(R.id.seek_bar_finish);
-            textView1 = (TextView) findViewById(R.id.edit_text_start);
-            textView2 = (TextView) findViewById(R.id.edit_text_finish);
-
-            button = (Button) findViewById(R.id.button_go);
-            Log.i(TAG, "Button: " + String.valueOf(button.isClickable()));
-
-            currentYear = getCurrentYear();
-
-
             check = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo[] info = check.getAllNetworkInfo();
-            for (int i = 0; i < info.length; i++) {
-                if (info[i].getState() == NetworkInfo.State.CONNECTED) {
-                    isConnected = true;
-                    Log.i(TAG, "Internet is connected");
-                    button.setClickable(true);
-                    break;
-                } else {
-                    Log.i(TAG, "Internet is not connected");
-                    button.setClickable(false);
-                }
+            NetworkInfo networkInfo = check.getActiveNetworkInfo();
+            isConnected = networkInfo != null && networkInfo.isConnected();
+            if (isConnected) {
+                button.setClickable(true);
+            } else {
+                button.setClickable(false);
             }
+            //            NetworkInfo[] info = check.getAllNetworkInfo();
+            //            for (int i = 0; i < info.length; i++) {
+            //                if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+            //                    isConnected = true;
+            //                    Log.i(TAG, "Internet is connected");
+            //                    button.setClickable(true);
+            //                    break;
+            //                } else {
+            //                    Log.i(TAG, "Internet is not connected");
+            //                    button.setClickable(false);
+            //                }
+            //            }
 
             if (isConnected) {
                 //TODO perform all tasks from internet
                 new GetOldestStartingDateTask().execute(REPOSITORY_URL);
             } else {
                 //TODO Take info from SQLite if presents
-                Toast.makeText(this, "Internet is not connected", Toast.LENGTH_SHORT).show();
-            }
-
-
-            if (startingDateFromPreferences != -1 && finishingDateFromPreferences != -1) {
-
-                oldestStartingDate = sharedPreferences.getInt(oldestDate, -1);
-
-                Log.i(TAG, "OldestStartingDate: " + oldestStartingDate);
-
-                seekBarStart.setMax(currentYear - oldestStartingDate);
-                seekBarFinish.setMax(currentYear - oldestStartingDate);
-
-                ////////////////////////////////////////////////////////////////////////
-                /// The set progress for the two bars works differently
-                /// - SeekBarStart must be set from the subtracting: STARTING CHOSEN - OLDEST
-                /// - SeekBarFinish must be set from the subtracting: CURRENT YEAR - FINISHING CHOSEN
-                ////////////////////////////////////////////////////////////////////////
-                seekBarStart.setProgress(startingDateFromPreferences - oldestStartingDate);
-                seekBarFinish.setProgress(currentYear - finishingDateFromPreferences);
-            }
-
-
-            if (!isConnected) {
                 seekBarStart.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
@@ -152,7 +192,27 @@ public class TemporalActivity extends AppCompatActivity {
                         return true;
                     }
                 });
+                Toast.makeText(this, "Please Connect to internet", Toast.LENGTH_SHORT).show();
             }
+
+
+//            if (startingDateFromPreferences != -1 && finishingDateFromPreferences != -1) {
+//
+//                oldestStartingDate = sharedPreferences.getInt(oldestDate, -1);
+//
+//                Log.i(TAG, "OldestStartingDate: " + oldestStartingDate);
+//
+//                seekBarStart.setMax(currentYear - oldestStartingDate);
+//                seekBarFinish.setMax(currentYear - oldestStartingDate);
+//
+//                ////////////////////////////////////////////////////////////////////////
+//                /// The set progress for the two bars works differently
+//                /// - SeekBarStart must be set from the subtracting: STARTING CHOSEN - OLDEST
+//                /// - SeekBarFinish must be set from the subtracting: CURRENT YEAR - FINISHING CHOSEN
+//                ////////////////////////////////////////////////////////////////////////
+//                seekBarStart.setProgress(startingDateFromPreferences - oldestStartingDate);
+//                seekBarFinish.setProgress(currentYear - finishingDateFromPreferences);
+//            }
 
             seekBarStart.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -160,13 +220,8 @@ public class TemporalActivity extends AppCompatActivity {
                 public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
 
                     check = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                    NetworkInfo[] info = check.getAllNetworkInfo();
-                    for (int i = 0; i < info.length; i++) {
-                        if (info[i].getState() == NetworkInfo.State.CONNECTED) {
-                            isConnected = true;
-                            Toast.makeText(getApplicationContext(), "Internet is connected", Toast.LENGTH_SHORT).show();
-                        }
-                    }
+                    NetworkInfo networkInfo = check.getActiveNetworkInfo();
+                    isConnected = networkInfo != null && networkInfo.isConnected();
 
                     if (isConnected) {
                         seekBar.setMax(currentYear - oldestStartingDate);
@@ -185,8 +240,6 @@ public class TemporalActivity extends AppCompatActivity {
                         //TODO Take info from SQLite if presents
                         Toast.makeText(getApplicationContext(), "Internet is not connected", Toast.LENGTH_SHORT).show();
                     }
-
-
                 }
 
                 private boolean isLegalMove(int chosenStartingDate) {
@@ -220,13 +273,8 @@ public class TemporalActivity extends AppCompatActivity {
                 public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
 
                     check = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                    NetworkInfo[] info = check.getAllNetworkInfo();
-                    for (int i = 0; i < info.length; i++) {
-                        if (info[i].getState() == NetworkInfo.State.CONNECTED) {
-                            isConnected = true;
-                            Toast.makeText(getApplicationContext(), "Internet is connected", Toast.LENGTH_SHORT).show();
-                        }
-                    }
+                    NetworkInfo networkInfo = check.getActiveNetworkInfo();
+                    isConnected = networkInfo != null && networkInfo.isConnected();
 
                     if (isConnected) {
 
@@ -269,33 +317,15 @@ public class TemporalActivity extends AppCompatActivity {
                 }
             });
 
+            Log.i(TAG, "On Resume");
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        Log.i(TAG, "On Pause");
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-
-        Log.i(TAG, "On Resume");
     }
 
     public void exploreCulturalInterests(View view){
 
         check = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo[] info = check.getAllNetworkInfo();
-        for (int i = 0; i<info.length; i++){
-            if (info[i].getState() == NetworkInfo.State.CONNECTED){
-                isConnected = true;
-                Toast.makeText(this, "Internet is connected", Toast.LENGTH_SHORT).show();
-            }
-        }
+        NetworkInfo networkInfo = check.getActiveNetworkInfo();
+        isConnected = networkInfo != null && networkInfo.isConnected();
 
         if(isConnected) {
 

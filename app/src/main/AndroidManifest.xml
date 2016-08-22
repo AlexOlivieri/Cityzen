@@ -3,8 +3,10 @@
     package="ch.hevs.datasemlab.cityzen">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
 
     <application
         android:allowBackup="true"
@@ -22,8 +24,13 @@
         <activity android:name=".CulturalInterestImageDetailsActivity" />
         <activity android:name=".CulturalInterestsGalleryActivity3" />
         <activity android:name=".CulturalInterestVideoDetailsActivity" />
-        <activity android:name=".CulturalInterestAudioDetailsActivity"></activity>
-        <activity android:name=".CulturalInterestsGalleryActivityFromDB"></activity>
+        <activity android:name=".CulturalInterestAudioDetailsActivity" />
+        <activity android:name=".CulturalInterestsGalleryActivityFromDB" />
+
+        <receiver
+            android:name=".NetworkBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
     </application>
 
 </manifest>

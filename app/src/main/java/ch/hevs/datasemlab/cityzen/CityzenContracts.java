@@ -14,4 +14,6 @@ public class CityzenContracts {
 
     public static final String APPLICATION_PREFERENCES = "application_preferences";
 
+    public static final String NETWORK_STATE = "network_state";
+
 }
