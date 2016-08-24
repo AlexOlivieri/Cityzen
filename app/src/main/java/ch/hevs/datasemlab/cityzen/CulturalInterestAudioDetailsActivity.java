@@ -14,6 +14,13 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
@@ -24,7 +31,7 @@ import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
 import java.io.IOException;
 
-public class CulturalInterestAudioDetailsActivity extends AppCompatActivity{
+public class CulturalInterestAudioDetailsActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     private static final String TAG = CulturalInterestAudioDetailsActivity.class.getSimpleName();
 
@@ -37,13 +44,19 @@ public class CulturalInterestAudioDetailsActivity extends AppCompatActivity{
 
     private MediaController videoController;
 
-    private String audio;
+    private GoogleMap mMap;
+    private LatLng coordinates;
+    private String position;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cultural_interest_audio_details);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         Toast.makeText(this, TAG, Toast.LENGTH_SHORT).show();
 
@@ -74,6 +87,18 @@ public class CulturalInterestAudioDetailsActivity extends AppCompatActivity{
         audioPlayer = null;
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.setMinZoomPreference(15);
+
+        // Add a marker in Sydney, Australia, and move the camera.
+        //LatLng sydney = new LatLng(46.2294, 7.362);
+//        mMap.addMarker(new MarkerOptions().position(coordinates).title(position));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
+
+    }
+
     private class GetCulturalInterestsDescription extends AsyncTask<String, Void, TupleQueryResult> {
 
         @Override
@@ -96,16 +121,21 @@ public class CulturalInterestAudioDetailsActivity extends AppCompatActivity{
                 qb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
                 qb.append("PREFIX dc: <http://purl.org/dc/elements/1.1/> \n");
                 qb.append("PREFIX dcterms: <http://purl.org/dc/terms/> \n");
+                qb.append("PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n");
 
-                qb.append(" SELECT DISTINCT ?description ?audio \n ");
+                qb.append(" SELECT DISTINCT ?description ?audio ?latitude ?longitude ?spatialThing \n ");
 
                 qb.append(" WHERE {?culturalInterest dc:title ");
                 qb.append("\"" +title + "\" . \n ");
-                qb.append(" ?culturalInterest dc:description ?description . \n");
+                qb.append(" ?culturalInterest dc:description ?description ; \n");
+                qb.append(" geo:location ?spatialThing . \n ");
+                qb.append(" ?spatialThing geo:lat ?latitude ; \n ");
+                qb.append(" geo:long ?longitude . \n ");
                 qb.append(" ?digitalrepresentationAggregator edm:aggregatedCHO ?culturalInterest . \n");
                 qb.append(" ?digitalrepresentationAggregator edm:hasView ?digitalrepresentation . \n");
                 qb.append(" ?digitalrepresentation dcterms:hasPart ?digitalItem . \n");
                 qb.append(" ?digitalItem schema:image_url ?audio . }\n");
+
 
                 Log.i(TAG + " query: ", qb.toString());
 
@@ -126,15 +156,25 @@ public class CulturalInterestAudioDetailsActivity extends AppCompatActivity{
 
                 Value descriptionValue = bs.getValue("description");
                 Value audioValue = bs.getValue("audio");
+                Value latitudeValue = bs.getValue("latitude");
+                Value longitudeValue = bs.getValue("longitude");
+                Value spacialThingValue = bs.getValue("spatialThing");
 
                 String description = descriptionValue.stringValue();
-                audio = audioValue.stringValue();
+                String audio = audioValue.stringValue();
+                String latitude = latitudeValue.stringValue();
+                String longitude = longitudeValue.stringValue();
+                String spatialThing = spacialThingValue.stringValue();
+
+
 
                 Log.i(TAG + "audio", audio);
 
                 Uri audioURI = Uri.parse(audio);
 
                 textViewDescription.setText(description);
+                coordinates = new LatLng(Double.valueOf(latitude), Double.valueOf(longitude));
+                position = spatialThing;
 
                 try {
                     audioPlayer = new MediaPlayer();
@@ -159,6 +199,8 @@ public class CulturalInterestAudioDetailsActivity extends AppCompatActivity{
                     System.err.println("Problem when getting the stream");
                 }
             }
+            mMap.addMarker(new MarkerOptions().position(coordinates).title(position));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
         }
     }
 }

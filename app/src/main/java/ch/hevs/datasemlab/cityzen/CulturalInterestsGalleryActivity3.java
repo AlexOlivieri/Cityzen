@@ -33,7 +33,7 @@ public class CulturalInterestsGalleryActivity3 extends AppCompatActivity {
         public void handleMessage(Message msg){
 
             Log.i(TAG, "handle message received");
-//            downloadProgress.dismiss();
+            downloadProgress.dismiss();
         }
     };
 
@@ -58,13 +58,13 @@ public class CulturalInterestsGalleryActivity3 extends AppCompatActivity {
         adapterViewPager = new CulturalInterestsPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapterViewPager);
 
-//        downloadProgress = new ProgressDialog(this);
-//        downloadProgress.setMessage("Downloading Cultural Interests");
-//        downloadProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//        downloadProgress.setIndeterminate(true);
-//        downloadProgress.setMax(100);
-//        downloadProgress.setProgress(0);
-//        downloadProgress.show();
+        downloadProgress = new ProgressDialog(this);
+        downloadProgress.setMessage("Downloading Cultural Interests");
+        downloadProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        downloadProgress.setIndeterminate(true);
+        downloadProgress.setMax(100);
+        downloadProgress.setProgress(0);
+        downloadProgress.show();
     }
 
     @Override
@@ -118,7 +118,7 @@ public class CulturalInterestsGalleryActivity3 extends AppCompatActivity {
                 case 0:
                     return ImageFragment.newInstance(mStartingDate, mFinishingDate);
                 case 1:
-                    return VideoFragment.newInstance(mStartingDate, mFinishingDate, downloadStateHandler);
+                    return VideoFragment.newInstance(mStartingDate, mFinishingDate);
                 case 2:
                     return AudioFragment.newInstance(mStartingDate, mFinishingDate, downloadStateHandler);
                 default:

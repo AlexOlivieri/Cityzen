@@ -306,8 +306,6 @@ public class AudioFragment extends Fragment {
 
                 RepositoryConnection conn = repo.getConnection();
 
-                String date = null;
-
                 try {
 
                     StringBuilder qb = new StringBuilder();
@@ -371,7 +369,17 @@ public class AudioFragment extends Fragment {
                 }
             }
         };
+
         Thread thread = new Thread(runnable);
         thread.start();
+
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Message msg = mHandler.obtainMessage();
+                Log.i(TAG, "mHandler");
+                mHandler.sendMessage(msg);
+            }
+        });
     }
 }
