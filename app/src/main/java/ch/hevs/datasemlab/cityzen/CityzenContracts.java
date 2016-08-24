@@ -20,4 +20,6 @@ public class CityzenContracts {
 
     public final String API_KEY = "AIzaSyD_DBmyjuHhsCDHxygwZCI02a0q6AZH1hE";
 
+    public static final String REPOSITORY_URL = "http://ec2-52-39-53-29.us-west-2.compute.amazonaws.com:8080/openrdf-sesame/repositories/CityZenDM";
+
 }

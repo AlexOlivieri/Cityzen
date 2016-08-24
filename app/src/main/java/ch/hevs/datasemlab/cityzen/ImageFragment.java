@@ -7,8 +7,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -81,8 +82,8 @@ public class ImageFragment extends Fragment {
             mFinishingDate = getArguments().getInt(CityzenContracts.FINISHING_DATE);
         }
 
-        new GetCulturalInterests().execute();
-
+//        new GetCulturalInterests().execute();
+        executeImagesQuery(CityzenContracts.REPOSITORY_URL);
 
     }
 
@@ -161,106 +162,231 @@ public class ImageFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    private class GetCulturalInterests extends AsyncTask<String, Void, TupleQueryResult> {
+//    private class GetCulturalInterests extends AsyncTask<String, Void, TupleQueryResult> {
+//
+//        @Override
+//        protected TupleQueryResult doInBackground(String... strings) {
+//
+//            Repository repo = new SPARQLRepository(TemporalActivity.REPOSITORY_URL);
+//            repo.initialize();
+//
+//            RepositoryConnection conn = repo.getConnection();
+//
+//            String date = null;
+//
+//            TupleQueryResult result = null;
+//
+//            try {
+//                StringBuilder qb = new StringBuilder();
+//
+//                qb.append("PREFIX schema: <http://www.hevs.ch/datasemlab/cityzen/schema#> \n");
+//                qb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+//                qb.append("PREFIX owlTime: <http://www.w3.org/TR/owl-time#> \n");
+//                qb.append("PREFIX edm: <http://www.europeana.eu/schemas/edm#> \n");
+//                qb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
+//                qb.append("PREFIX dc: <http://purl.org/dc/elements/1.1/> \n");
+//                qb.append("PREFIX dcterms: <http://purl.org/dc/terms/> \n");
+//
+//                qb.append(" SELECT DISTINCT ?title ?image \n ");
+//
+//                qb.append(" WHERE {?culturalInterest dc:title ?title . \n ");
+//
+//                qb.append(" ?digitalrepresentationAggregator edm:aggregatedCHO ?culturalInterest . \n");
+//                qb.append(" ?digitalrepresentationAggregator edm:hasView ?digitalrepresentation . \n");
+//                qb.append(" ?digitalrepresentation dcterms:hasPart ?digitalItem . \n");
+//                qb.append(" { ?digitalrepresentation dc:format \"image/jpeg\" } UNION \n");
+//                qb.append(" { ?digitalrepresentation dc:format \"image/png\" } UNION \n");
+//                qb.append(" { ?digitalrepresentation dc:format \"application/pdf\" } . \n");
+//                qb.append(" ?digitalItem schema:thumbnail_url ?image . \n");
+//                qb.append(" ?digitalrepresentationAggregator owlTime:hasBeginning ?instant . \n");
+//
+//                qb.append(" ?instant owlTime:inXSDDateTime ?date . ");
+//
+//                qb.append(" FILTER ( ?date >= \"" + mStartingDate + "\" && ?date <= \"" + mFinishingDate + "\") } ");
+//
+//                qb.append("ORDER BY ?date");
+//                //qb.append(" LIMIT 1 ");
+//
+//                result = conn.prepareTupleQuery(QueryLanguage.SPARQL, qb.toString()).evaluate();
+//
+//            } finally {
+//                conn.close();
+//            }
+//            return result;
+//        }
+//
+//        private Object[] rowValues = new Object[3];
+//
+//        @Override
+//        protected void onPostExecute(TupleQueryResult result) {
+//            super.onPostExecute(result);
+//            int i=0;
+//            while (result.hasNext()) {
+//                BindingSet bs = result.next();
+//                rowValues[0] = String.valueOf(i);
+//                Value titleValue = bs.getValue("title");
+//                Value imageValue = bs.getValue("image");
+//                String title = titleValue.stringValue();
+//                rowValues[1] = title;
+//                String image = imageValue.stringValue();
+//                URL url = null;
+//                Bitmap bitmap = null;
+//                byte[] bitmapArray = null;
+//                try {
+//                    url = new URL(image);
+//                    InputStream inputStream = url.openStream();
+//                    bitmap = BitmapFactory.decodeStream(inputStream);
+//                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+//                    bitmapArray = stream.toByteArray();
+//                    rowValues[2] = bitmapArray;
+//                }catch (MalformedURLException e){
+//                    e.printStackTrace();
+//                }catch (IOException e) {
+//                    e.printStackTrace();
+//                    System.err.println("Title: " + title);
+//                }
+////                Log.i(TAG,  title + ", " + description + ", " + image);
+//
+//                i++;
+//
+//                mCursorCulturalInterests.addRow(rowValues);
+//            }
+////            Log.i(TAG + "number of rows", String.valueOf(cursorCulturalInterests.getCount()));
+////            while(cursorCulturalInterests.moveToNext()) {
+////                Log.i(TAG + " id: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("_id")));
+////                Log.i(TAG + " Title: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Title")));
+////                Log.i(TAG + " Description: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Description")));
+////                Log.i(TAG + " Image: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Image")));
+////           }
+//            mAdapter = new CulturalInterestsAdapter(getActivity(), mCursorCulturalInterests, 0);
+//            listView.setAdapter(mAdapter);
+//            //adapter.changeCursor(cursorCulturalInterests);
+//        }
+//    }
 
-        @Override
-        protected TupleQueryResult doInBackground(String... strings) {
 
-            Repository repo = new SPARQLRepository(TemporalActivity.REPOSITORY_URL);
-            repo.initialize();
-
-            RepositoryConnection conn = repo.getConnection();
-
-            String date = null;
-
-            TupleQueryResult result = null;
-
-            try {
-                StringBuilder qb = new StringBuilder();
-
-                qb.append("PREFIX schema: <http://www.hevs.ch/datasemlab/cityzen/schema#> \n");
-                qb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-                qb.append("PREFIX owlTime: <http://www.w3.org/TR/owl-time#> \n");
-                qb.append("PREFIX edm: <http://www.europeana.eu/schemas/edm#> \n");
-                qb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
-                qb.append("PREFIX dc: <http://purl.org/dc/elements/1.1/> \n");
-                qb.append("PREFIX dcterms: <http://purl.org/dc/terms/> \n");
-
-                qb.append(" SELECT DISTINCT ?title ?image \n ");
-
-                qb.append(" WHERE {?culturalInterest dc:title ?title . \n ");
-
-                qb.append(" ?digitalrepresentationAggregator edm:aggregatedCHO ?culturalInterest . \n");
-                qb.append(" ?digitalrepresentationAggregator edm:hasView ?digitalrepresentation . \n");
-                qb.append(" ?digitalrepresentation dcterms:hasPart ?digitalItem . \n");
-                qb.append(" { ?digitalrepresentation dc:format \"image/jpeg\" } UNION \n");
-                qb.append(" { ?digitalrepresentation dc:format \"image/png\" } UNION \n");
-                qb.append(" { ?digitalrepresentation dc:format \"application/pdf\" } . \n");
-                qb.append(" ?digitalItem schema:thumbnail_url ?image . \n");
-                qb.append(" ?digitalrepresentationAggregator owlTime:hasBeginning ?instant . \n");
-
-                qb.append(" ?instant owlTime:inXSDDateTime ?date . ");
-
-                qb.append(" FILTER ( ?date >= \"" + mStartingDate + "\" && ?date <= \"" + mFinishingDate + "\") } ");
-
-                qb.append("ORDER BY ?date");
-                //qb.append(" LIMIT 1 ");
-
-                result = conn.prepareTupleQuery(QueryLanguage.SPARQL, qb.toString()).evaluate();
-
-            } finally {
-                conn.close();
-            }
-            return result;
-        }
+    Handler handlerImage = new Handler() {
 
         private Object[] rowValues = new Object[3];
 
         @Override
-        protected void onPostExecute(TupleQueryResult result) {
-            super.onPostExecute(result);
-            int i=0;
-            while (result.hasNext()) {
-                BindingSet bs = result.next();
-                rowValues[0] = String.valueOf(i);
-                Value titleValue = bs.getValue("title");
-                Value imageValue = bs.getValue("image");
-                String title = titleValue.stringValue();
-                rowValues[1] = title;
-                String image = imageValue.stringValue();
-                URL url = null;
-                Bitmap bitmap = null;
-                byte[] bitmapArray = null;
-                try {
-                    url = new URL(image);
-                    InputStream inputStream = url.openStream();
-                    bitmap = BitmapFactory.decodeStream(inputStream);
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                    bitmapArray = stream.toByteArray();
-                    rowValues[2] = bitmapArray;
-                }catch (MalformedURLException e){
-                    e.printStackTrace();
-                }catch (IOException e) {
-                    e.printStackTrace();
-                    System.err.println("Title: " + title);
-                }
-//                Log.i(TAG,  title + ", " + description + ", " + image);
+        public void handleMessage(Message msg) {
 
-                i++;
+            Bundle bundle = msg.getData();
+            String identifier = bundle.getString("_id");
+            String title = bundle.getString("Title");
+            byte[] image = bundle.getByteArray("Image");
 
-                mCursorCulturalInterests.addRow(rowValues);
-            }
-//            Log.i(TAG + "number of rows", String.valueOf(cursorCulturalInterests.getCount()));
-//            while(cursorCulturalInterests.moveToNext()) {
-//                Log.i(TAG + " id: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("_id")));
-//                Log.i(TAG + " Title: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Title")));
-//                Log.i(TAG + " Description: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Description")));
-//                Log.i(TAG + " Image: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Image")));
-//           }
+            rowValues[0] = identifier;
+            rowValues[1] = title;
+            rowValues[2] = image;
+
+            mCursorCulturalInterests.addRow(rowValues);
+
             mAdapter = new CulturalInterestsAdapter(getActivity(), mCursorCulturalInterests, 0);
             listView.setAdapter(mAdapter);
-            //adapter.changeCursor(cursorCulturalInterests);
+
         }
+    };
+
+
+    private void executeImagesQuery(String url) {
+
+        final String urlRepository = url;
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+
+                Repository repo = new SPARQLRepository(urlRepository);
+                repo.initialize();
+
+                RepositoryConnection conn = repo.getConnection();
+
+                String date = null;
+
+                try {
+
+                    StringBuilder qb = new StringBuilder();
+
+                    qb.append("PREFIX schema: <http://www.hevs.ch/datasemlab/cityzen/schema#> \n");
+                    qb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+                    qb.append("PREFIX owlTime: <http://www.w3.org/TR/owl-time#> \n");
+                    qb.append("PREFIX edm: <http://www.europeana.eu/schemas/edm#> \n");
+                    qb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
+                    qb.append("PREFIX dc: <http://purl.org/dc/elements/1.1/> \n");
+                    qb.append("PREFIX dcterms: <http://purl.org/dc/terms/> \n");
+
+                    qb.append(" SELECT DISTINCT ?title ?image \n ");
+
+                    qb.append(" WHERE {?culturalInterest dc:title ?title . \n ");
+
+                    qb.append(" ?digitalrepresentationAggregator edm:aggregatedCHO ?culturalInterest . \n");
+                    qb.append(" ?digitalrepresentationAggregator edm:hasView ?digitalrepresentation . \n");
+                    qb.append(" ?digitalrepresentation dcterms:hasPart ?digitalItem . \n");
+                    qb.append(" { ?digitalrepresentation dc:format \"image/jpeg\" } UNION \n");
+                    qb.append(" { ?digitalrepresentation dc:format \"image/png\" } UNION \n");
+                    qb.append(" { ?digitalrepresentation dc:format \"application/pdf\" } . \n");
+                    qb.append(" ?digitalItem schema:thumbnail_url ?image . \n");
+                    qb.append(" ?digitalrepresentationAggregator owlTime:hasBeginning ?instant . \n");
+
+                    qb.append(" ?instant owlTime:inXSDDateTime ?date . ");
+
+                    qb.append(" FILTER ( ?date >= \"" + mStartingDate + "\" && ?date <= \"" + mFinishingDate + "\") } ");
+
+                    qb.append("ORDER BY ?date");
+
+                    TupleQueryResult result =
+                            conn.prepareTupleQuery(QueryLanguage.SPARQL, qb.toString()).evaluate();
+
+                    int identifier = 0;
+
+                    while (result.hasNext()) {
+                        BindingSet bs = result.next();
+                        Value titleValue = bs.getValue("title");
+                        Value imageValue = bs.getValue("image");
+
+                        String title = titleValue.stringValue();
+                        String imageURL = imageValue.stringValue();
+
+                        URL url = null;
+                        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.audio_icon);
+
+                        byte[] bitmapArray = null;
+                        try {
+                            url = new URL(imageURL);
+                            InputStream inputStream = url.openStream();
+                            bitmap = BitmapFactory.decodeStream(inputStream);
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                            bitmapArray = stream.toByteArray();
+                        }catch (MalformedURLException e){
+                            e.printStackTrace();
+                        }catch (IOException e) {
+                            e.printStackTrace();
+                            System.err.println("Title: " + title);
+                        }
+
+                        Message msg = new Message();
+                        msg = handlerImage.obtainMessage();
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString("_id", String.valueOf(identifier));
+                        bundle.putString("Title", title);
+                        bundle.putByteArray("Image", bitmapArray);
+
+                        identifier++;
+
+                        msg.setData(bundle);
+                        handlerImage.sendMessage(msg);
+                    }
+                } finally {
+                    conn.close();
+                }
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
     }
 }
