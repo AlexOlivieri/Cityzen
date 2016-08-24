@@ -146,7 +146,9 @@ public class TemporalActivity extends AppCompatActivity {
 
             Log.i(TAG, "Date from Preferences: " + startingDateFromPreferences + " - " + finishingDateFromPreferences);
 
-            Intent intent = new Intent(this, CulturalInterestsGalleryActivityFromDB.class);
+            //TODO - Undo once working properly the CulturalInterestsGalleryActivity3
+            //Intent intent = new Intent(this, CulturalInterestsGalleryActivityFromDB.class);
+            Intent intent = new Intent(this, CulturalInterestsGalleryActivity3.class);
             intent.putExtra(CityzenContracts.STARTING_DATE, startingDateFromPreferences);
             intent.putExtra(CityzenContracts.FINISHING_DATE, finishingDateFromPreferences);
 

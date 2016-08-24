@@ -16,4 +16,8 @@ public class CityzenContracts {
 
     public static final String NETWORK_STATE = "network_state";
 
+    public static final String DOWNLOAD_FINISHED = "download_finished";
+
+    public final String API_KEY = "AIzaSyD_DBmyjuHhsCDHxygwZCI02a0q6AZH1hE";
+
 }

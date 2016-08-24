@@ -1,9 +1,12 @@
 package ch.hevs.datasemlab.cityzen;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,6 +26,16 @@ public class CulturalInterestsGalleryActivityFromDB extends AppCompatActivity {
 
     private FragmentPagerAdapter adapterViewPager;
 
+    private static ProgressDialog downloadProgress;
+
+    private static Handler downloadStateHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg){
+
+            downloadProgress.dismiss();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,8 +53,17 @@ public class CulturalInterestsGalleryActivityFromDB extends AppCompatActivity {
         mFinishingDate = extras.getInt(CityzenContracts.FINISHING_DATE);
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.vpPager);
+        viewPager.setOffscreenPageLimit(2);
         adapterViewPager = new CulturalInterestsPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapterViewPager);
+
+        downloadProgress = new ProgressDialog(this);
+        downloadProgress.setMessage("Downloading Cultural Interests");
+        downloadProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        downloadProgress.setIndeterminate(true);
+        downloadProgress.setMax(100);
+        downloadProgress.setProgress(0);
+        downloadProgress.show();
 
     }
 
@@ -94,9 +116,9 @@ public class CulturalInterestsGalleryActivityFromDB extends AppCompatActivity {
                 case 0:
                     return ImageFragment.newInstance(mStartingDate, mFinishingDate);
                 case 1:
-                    return VideoFragment.newInstance(mStartingDate, mFinishingDate);
+                    return VideoFragment.newInstance(mStartingDate, mFinishingDate, downloadStateHandler);
                 case 2:
-                    return AudioFragment.newInstance(mStartingDate, mFinishingDate);
+                    return AudioFragment.newInstance(mStartingDate, mFinishingDate, downloadStateHandler);
                 default:
                     return null;
             }

@@ -6,6 +6,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
     <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
 
     <application
@@ -27,10 +31,13 @@
         <activity android:name=".CulturalInterestAudioDetailsActivity" />
         <activity android:name=".CulturalInterestsGalleryActivityFromDB" />
 
-        <receiver
-            android:name=".NetworkBroadcastReceiver"
-            android:enabled="true"
-            android:exported="true"></receiver>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD_DBmyjuHhsCDHxygwZCI02a0q6AZH1hE" />
+
     </application>
 
 </manifest>

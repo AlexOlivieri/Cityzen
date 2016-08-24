@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,7 +41,7 @@ import java.io.ByteArrayOutputStream;
  * create an instance of this fragment.
  */
 public class AudioFragment extends Fragment {
-    private final String TAG = VideoFragment.class.getSimpleName();
+    private final String TAG = AudioFragment.class.getSimpleName();
 
     private int mStartingDate;
     private int mFinishingDate;
@@ -54,17 +56,20 @@ public class AudioFragment extends Fragment {
 
     private ListView listView;
 
+    private static Handler mHandler;
+
     public AudioFragment() {
         // Required empty public constructor
     }
 
 
-    public static AudioFragment newInstance(int startingDate, int finishingDate) {
+    public static AudioFragment newInstance(int startingDate, int finishingDate, Handler handler) {
         AudioFragment fragment = new AudioFragment();
         Bundle args = new Bundle();
         args.putInt(CityzenContracts.STARTING_DATE, startingDate);
         args.putInt(CityzenContracts.FINISHING_DATE, finishingDate);
         fragment.setArguments(args);
+        mHandler = handler;
         return fragment;
     }
 
@@ -236,15 +241,28 @@ public class AudioFragment extends Fragment {
                 i++;
 
                 mCursorCulturalInterests.addRow(rowValues);
+
+
+
+
             }
-//            Log.i(TAG + "number of rows", String.valueOf(cursorCulturalInterests.getCount()));
 //            while(cursorCulturalInterests.moveToNext()) {
 //                Log.i(TAG + " id: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("_id")));
 //                Log.i(TAG + " Title: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Title")));
 //                Log.i(TAG + " Description: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Description")));
 //                Log.i(TAG + " Image: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Image")));
 //           }
+
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Message msg = new Message();
+                    mHandler.sendMessage(msg);
+                }
+            });
+
             mAdapter = new CulturalInterestsAdapter(getActivity(), mCursorCulturalInterests, 0);
+
             listView.setAdapter(mAdapter);
             //adapter.changeCursor(cursorCulturalInterests);
         }

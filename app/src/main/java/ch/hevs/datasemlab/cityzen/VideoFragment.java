@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,7 +41,7 @@ import java.net.URL;
  * create an instance of this fragment.
  */
 public class VideoFragment extends Fragment {
-    private final String TAG = VideoFragment.class.getSimpleName();
+    private final static String TAG = VideoFragment.class.getSimpleName();
 
     private int mStartingDate;
     private int mFinishingDate;
@@ -55,17 +56,21 @@ public class VideoFragment extends Fragment {
 
     private ListView listView;
 
+    private static Handler mHandler;
+
     public VideoFragment() {
         // Required empty public constructor
     }
 
 
-    public static VideoFragment newInstance(int startingDate, int finishingDate) {
+    public static VideoFragment newInstance(int startingDate, int finishingDate, Handler handler) {
         VideoFragment fragment = new VideoFragment();
         Bundle args = new Bundle();
         args.putInt(CityzenContracts.STARTING_DATE, startingDate);
         args.putInt(CityzenContracts.FINISHING_DATE, finishingDate);
         fragment.setArguments(args);
+        Log.i(TAG, "return fragment");
+        mHandler = handler;
         return fragment;
     }
 
@@ -78,7 +83,6 @@ public class VideoFragment extends Fragment {
         }
 
         new GetCulturalInterests().execute();
-
 
     }
 
@@ -253,6 +257,17 @@ public class VideoFragment extends Fragment {
 //                Log.i(TAG + " Description: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Description")));
 //                Log.i(TAG + " Image: ", cursorCulturalInterests.getString(cursorCulturalInterests.getColumnIndex("Image")));
 //           }
+
+            Log.i(TAG, "before handler");
+
+//            mHandler.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Message msg = new Message();
+//                    mHandler.sendMessage(msg);
+//                }
+//            });
+
             mAdapter = new CulturalInterestsAdapter(getActivity(), mCursorCulturalInterests, 0);
             listView.setAdapter(mAdapter);
             //adapter.changeCursor(cursorCulturalInterests);

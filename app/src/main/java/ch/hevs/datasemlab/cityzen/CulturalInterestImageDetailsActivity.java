@@ -10,6 +10,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
@@ -18,7 +25,7 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
-public class CulturalInterestImageDetailsActivity extends AppCompatActivity {
+public class CulturalInterestImageDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = CulturalInterestImageDetailsActivity.class.getSimpleName();
 
@@ -26,10 +33,21 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity {
 
     private TextView textViewDescription;
 
+    private GoogleMap mMap;
+    private LatLng coordinates;
+    private String position;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cultural_interest_image_details);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+//        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+//        mapFragment.getMapAsync(this);
 
         Toast.makeText(this, TAG, Toast.LENGTH_SHORT).show();
 
@@ -47,6 +65,18 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity {
         imageView.setImageBitmap(Bitmap.createScaledBitmap(imageBitmap, 800, 600, false));
 
         new GetCulturalInterestsDescription().execute(title);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.setMinZoomPreference(15);
+
+        // Add a marker in Sydney, Australia, and move the camera.
+        //LatLng sydney = new LatLng(46.2294, 7.362);
+//        mMap.addMarker(new MarkerOptions().position(coordinates).title(position));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
+
     }
 
     private class GetCulturalInterestsDescription extends AsyncTask<String, Void, TupleQueryResult> {
@@ -71,12 +101,17 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity {
                 qb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
                 qb.append("PREFIX dc: <http://purl.org/dc/elements/1.1/> \n");
                 qb.append("PREFIX dcterms: <http://purl.org/dc/terms/> \n");
+                qb.append("PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n");
 
-                qb.append(" SELECT DISTINCT ?description \n ");
+                qb.append(" SELECT DISTINCT ?description ?latitude ?longitude ?spatialThing \n ");
 
                 qb.append(" WHERE {?culturalInterest dc:title ");
                 qb.append("\"" +title + "\" . \n ");
-                qb.append(" ?culturalInterest dc:description ?description . } ");
+                Log.i(TAG, "Title: " + title);
+                qb.append(" ?culturalInterest dc:description ?description ; \n ");
+                qb.append(" geo:location ?spatialThing . \n ");
+                qb.append(" ?spatialThing geo:lat ?latitude ; \n ");
+                qb.append(" geo:long ?longitude . \n } ");
 
                 Log.i(TAG + " query: ", qb.toString());
 
@@ -96,11 +131,22 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity {
                 BindingSet bs = result.next();
 
                 Value descriptionValue = bs.getValue("description");
+                Value latitudeValue = bs.getValue("latitude");
+                Value longitudeValue = bs.getValue("longitude");
+                Value spacialThingValue = bs.getValue("spatialThing");
 
                 String description = descriptionValue.stringValue();
+                String latitude = latitudeValue.stringValue();
+                String longitude = longitudeValue.stringValue();
+                String spatialThing = spacialThingValue.stringValue();
 
                 textViewDescription.setText(description);
+                coordinates = new LatLng(Double.valueOf(latitude), Double.valueOf(longitude));
+                position = spatialThing;
+
             }
+            mMap.addMarker(new MarkerOptions().position(coordinates).title(position));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
         }
     }
 }
