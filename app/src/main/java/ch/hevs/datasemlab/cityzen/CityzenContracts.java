@@ -11,6 +11,8 @@ public class CityzenContracts {
 
     public static final String STARTING_DATE = "starting_date";
     public static final String FINISHING_DATE = "finishing_date";
+    public static final String INTERVAL_ALREADY_CHOSEN = "interval_already_chosen";
+    public static final String INTERVAL_TO_BE_CHANGED = "interval_to_be_changed";
 
     public static final String APPLICATION_PREFERENCES = "application_preferences";
 

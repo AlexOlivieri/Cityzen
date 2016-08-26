@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +11,14 @@ import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.ByteArrayOutputStream;
 
 /**
  * Created by Alex on 8/12/2016.
  */
 public class CulturalInterestsAdapter extends CursorAdapter{
+
+    private static final String TAG = CulturalInterestsAdapter.class.getSimpleName();
 
     private LayoutInflater cursorInflater;
 
@@ -28,8 +26,10 @@ public class CulturalInterestsAdapter extends CursorAdapter{
 
     public CulturalInterestsAdapter(Context context, Cursor cursor, int flags){
         super(context, cursor, 0);
-        cursorInflater = (LayoutInflater) context.getSystemService(
-                Context.LAYOUT_INFLATER_SERVICE);
+        if (context != null) {
+            cursorInflater = (LayoutInflater) context.getSystemService(
+                    Context.LAYOUT_INFLATER_SERVICE);
+        }
     }
 
     @Override
@@ -51,38 +51,44 @@ public class CulturalInterestsAdapter extends CursorAdapter{
 
         //TODO:  get image with handler
 
+        if(imageByte == null) {
+            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.image_not_found);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            imageByte = stream.toByteArray();
+        }
+
         Bitmap image = BitmapFactory.decodeByteArray(imageByte, 0, imageByte.length);
         imageView.setImageBitmap(Bitmap.createScaledBitmap(image, 160, 160, false));
         textViewTitle.setText(title);
         //textViewDescription.setText(description);
     }
 
-    private class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
-
-        @Override
-        protected Bitmap doInBackground(String... strings) {
-            URL url = null;
-            Bitmap image = null;
-            try {
-                url = new URL(strings[0]);
-                InputStream inputStream = url.openStream();
-                image = BitmapFactory.decodeStream(inputStream);
-            }catch (MalformedURLException e){
-                e.printStackTrace();
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-
-            return image;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-            if(bitmap != null) {
-                imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 120, 120, false));
-            }
-        }
-    }
-
+//    private class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
+//
+//        @Override
+//        protected Bitmap doInBackground(String... strings) {
+//            URL url = null;
+//            Bitmap image = null;
+//            try {
+//                url = new URL(strings[0]);
+//                InputStream inputStream = url.openStream();
+//                image = BitmapFactory.decodeStream(inputStream);
+//            }catch (MalformedURLException e){
+//                e.printStackTrace();
+//            }catch (IOException e){
+//                e.printStackTrace();
+//            }
+//
+//            return image;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Bitmap bitmap) {
+//            super.onPostExecute(bitmap);
+//            if(bitmap != null) {
+//                imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 120, 120, false));
+//            }
+//        }
+//    }
 }

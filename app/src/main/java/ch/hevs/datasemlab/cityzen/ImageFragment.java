@@ -247,7 +247,7 @@ public class ImageFragment extends Fragment {
                         String imageURL = imageValue.stringValue();
 
                         URL url = null;
-                        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.audio_icon);
+                        Bitmap bitmap;
 
                         byte[] bitmapArray = null;
                         try {

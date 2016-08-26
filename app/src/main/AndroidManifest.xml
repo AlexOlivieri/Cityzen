@@ -24,8 +24,13 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
-        <activity android:name=".CulturalInterestImageDetailsActivity" />
+        <activity android:name=".CulturalInterestImageDetailsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".TemporalActivity" />
+        </activity>
         <activity android:name=".CulturalInterestsGalleryActivity3" />
         <activity android:name=".CulturalInterestVideoDetailsActivity" />
         <activity android:name=".CulturalInterestAudioDetailsActivity" />

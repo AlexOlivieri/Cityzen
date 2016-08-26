@@ -55,20 +55,20 @@ public class AudioFragment extends Fragment {
 
     private ListView listView;
 
-    private static Handler mHandler;
+    //private static Handler mHandler;
 
     public AudioFragment() {
         // Required empty public constructor
     }
 
 
-    public static AudioFragment newInstance(int startingDate, int finishingDate, Handler handler) {
+    public static AudioFragment newInstance(int startingDate, int finishingDate) {
         AudioFragment fragment = new AudioFragment();
         Bundle args = new Bundle();
         args.putInt(CityzenContracts.STARTING_DATE, startingDate);
         args.putInt(CityzenContracts.FINISHING_DATE, finishingDate);
         fragment.setArguments(args);
-        mHandler = handler;
+        //mHandler = handler;
         return fragment;
     }
 
@@ -373,13 +373,13 @@ public class AudioFragment extends Fragment {
         Thread thread = new Thread(runnable);
         thread.start();
 
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                Message msg = mHandler.obtainMessage();
-                Log.i(TAG, "mHandler");
-                mHandler.sendMessage(msg);
-            }
-        });
+//        mHandler.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                Message msg = mHandler.obtainMessage();
+//                Log.i(TAG, "mHandler");
+//                mHandler.sendMessage(msg);
+//            }
+//        });
     }
 }

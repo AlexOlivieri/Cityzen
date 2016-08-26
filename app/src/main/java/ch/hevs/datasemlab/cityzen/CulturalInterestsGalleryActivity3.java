@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,14 +26,14 @@ public class CulturalInterestsGalleryActivity3 extends AppCompatActivity {
 
     private static ProgressDialog downloadProgress;
 
-    private static Handler downloadStateHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg){
-
-            Log.i(TAG, "handle message received");
-            downloadProgress.dismiss();
-        }
-    };
+//    private static Handler downloadStateHandler = new Handler(){
+//        @Override
+//        public void handleMessage(Message msg){
+//
+//            Log.i(TAG, "handle message received");
+//            downloadProgress.dismiss();
+//        }
+//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +56,13 @@ public class CulturalInterestsGalleryActivity3 extends AppCompatActivity {
         adapterViewPager = new CulturalInterestsPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapterViewPager);
 
-        downloadProgress = new ProgressDialog(this);
-        downloadProgress.setMessage("Downloading Cultural Interests");
-        downloadProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        downloadProgress.setIndeterminate(true);
-        downloadProgress.setMax(100);
-        downloadProgress.setProgress(0);
-        downloadProgress.show();
+//        downloadProgress = new ProgressDialog(this);
+//        downloadProgress.setMessage("Downloading Cultural Interests");
+//        downloadProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//        downloadProgress.setIndeterminate(true);
+//        downloadProgress.setMax(100);
+//        downloadProgress.setProgress(0);
+//        downloadProgress.show();
     }
 
     @Override
@@ -82,8 +80,9 @@ public class CulturalInterestsGalleryActivity3 extends AppCompatActivity {
 
             SharedPreferences sharedPreferences = this.getSharedPreferences(CityzenContracts.APPLICATION_PREFERENCES, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt(CityzenContracts.STARTING_DATE, -1);
-            editor.putInt(CityzenContracts.FINISHING_DATE, -1);
+//            editor.putInt(CityzenContracts.STARTING_DATE, -1);
+//            editor.putInt(CityzenContracts.FINISHING_DATE, -1);
+            editor.putBoolean(CityzenContracts.INTERVAL_TO_BE_CHANGED, true);
             editor.commit();
 
             Log.i(TAG, "Item Menu_Interval");
@@ -120,7 +119,7 @@ public class CulturalInterestsGalleryActivity3 extends AppCompatActivity {
                 case 1:
                     return VideoFragment.newInstance(mStartingDate, mFinishingDate);
                 case 2:
-                    return AudioFragment.newInstance(mStartingDate, mFinishingDate, downloadStateHandler);
+                    return AudioFragment.newInstance(mStartingDate, mFinishingDate);
                 default:
                     return null;
             }

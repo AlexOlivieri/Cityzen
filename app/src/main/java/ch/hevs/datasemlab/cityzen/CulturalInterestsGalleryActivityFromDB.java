@@ -118,7 +118,7 @@ public class CulturalInterestsGalleryActivityFromDB extends AppCompatActivity {
                 case 1:
                     return VideoFragment.newInstance(mStartingDate, mFinishingDate);
                 case 2:
-                    return AudioFragment.newInstance(mStartingDate, mFinishingDate, downloadStateHandler);
+                    return AudioFragment.newInstance(mStartingDate, mFinishingDate);
                 default:
                     return null;
             }
