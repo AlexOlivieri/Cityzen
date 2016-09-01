@@ -1,12 +1,14 @@
 package ch.hevs.datasemlab.cityzen;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -39,7 +41,7 @@ public class TemporalActivity extends AppCompatActivity {
     private TextView textView1;
     private SeekBar seekBarFinish;
     private TextView textView2;
-    private Button button;
+    private Button buttonCulturalInterestsExploration;
 
     private int oldestStartingDate;
 
@@ -109,7 +111,7 @@ public class TemporalActivity extends AppCompatActivity {
         textView1 = (TextView) findViewById(R.id.edit_text_start);
         textView2 = (TextView) findViewById(R.id.edit_text_finish);
 
-        button = (Button) findViewById(R.id.button_go);
+        buttonCulturalInterestsExploration = (Button) findViewById(R.id.button_go);
 
         Button timeTravelButton = (Button) findViewById(R.id.time_travel);
 
@@ -126,6 +128,12 @@ public class TemporalActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
+
+        SharedPreferences sharedPreferences = this.getSharedPreferences(CityzenContracts.APPLICATION_PREFERENCES, Context.MODE_PRIVATE);
+        intervalAlreadyChosen = sharedPreferences.getBoolean(CityzenContracts.INTERVAL_ALREADY_CHOSEN, false);
+        intervalToBeChanged = sharedPreferences.getBoolean(CityzenContracts.INTERVAL_TO_BE_CHANGED, true);
+        startingDateFromPreferences = sharedPreferences.getInt(CityzenContracts.STARTING_DATE, -1);
+        finishingDateFromPreferences = sharedPreferences.getInt(CityzenContracts.FINISHING_DATE, -1);
 
         Log.i(TAG, "On Resume");
 
@@ -158,11 +166,11 @@ public class TemporalActivity extends AppCompatActivity {
             NetworkInfo networkInfo = check.getActiveNetworkInfo();
             isConnected = networkInfo != null && networkInfo.isConnected();
             if (isConnected) {
-                button.setClickable(true);
+                buttonCulturalInterestsExploration.setClickable(true);
                 //TODO perform all tasks from internet
                 new GetOldestStartingDateTask().execute(REPOSITORY_URL);
             } else {
-                button.setClickable(false);
+                buttonCulturalInterestsExploration.setClickable(false);
                 //TODO Take info from SQLite if presents
                 seekBarStart.setOnTouchListener(new View.OnTouchListener() {
                     @Override
@@ -205,6 +213,7 @@ public class TemporalActivity extends AppCompatActivity {
 
             seekBarStart.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
+                int chosenStartingDate;
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
@@ -213,18 +222,23 @@ public class TemporalActivity extends AppCompatActivity {
                     NetworkInfo networkInfo = check.getActiveNetworkInfo();
                     isConnected = networkInfo != null && networkInfo.isConnected();
 
+
+
                     if (isConnected) {
                         seekBar.setMax(currentYear - oldestStartingDate);
                         //                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
-                        int chosenStartingDate = oldestStartingDate + progressValue;
+                        chosenStartingDate = oldestStartingDate + progressValue;
 
                         Log.i(TAG + " ChosenStartingDate", String.valueOf(chosenStartingDate));
 
                         if (isLegalMove(chosenStartingDate)) {
+                            buttonCulturalInterestsExploration.setClickable(true);
                             textView1.setText(String.valueOf(chosenStartingDate));
                             seekBar.setProgress(seekBar.getProgress());
                         } else {
-                            Toast.makeText(getApplicationContext(), "Starting Date can not be successive to the Finishing Date", Toast.LENGTH_SHORT).show();
+                            buttonCulturalInterestsExploration.setClickable(false);
+                            Log.i(TAG, "Chosen Starting Date - Starting Date can not be successive to the Finishing Date");
+//                            Toast.makeText(getApplicationContext(), "Starting Date can not be successive to the Finishing Date", Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         //TODO Take info from SQLite if presents
@@ -250,7 +264,10 @@ public class TemporalActivity extends AppCompatActivity {
                 // TODO
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    //                Log.i(TAG + "BarStart:onStop", "To Define");
+                    if (!isLegalMove(chosenStartingDate)) {
+
+                        Toast.makeText(getApplicationContext(), "Starting Date can not be successive to the Finishing Date", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
@@ -258,6 +275,8 @@ public class TemporalActivity extends AppCompatActivity {
             //seekBarFinish.setMax(maxFinish);
 
             seekBarFinish.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                int chosenFinishingDate;
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
@@ -270,15 +289,18 @@ public class TemporalActivity extends AppCompatActivity {
 
                         seekBar.setMax(currentYear - oldestStartingDate);
                         //                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
-                        int chosenFinishingDate = currentYear - progressValue;
+                        chosenFinishingDate = currentYear - progressValue;
 
                         ///                Log.i(TAG + " ChosenFinishingDate: ", String.valueOf(chosenFinishingDate));
 
                         if (isLegalMove(chosenFinishingDate)) {
+                            buttonCulturalInterestsExploration.setClickable(true);
                             textView2.setText(String.valueOf(chosenFinishingDate));
                             seekBar.setProgress(seekBar.getProgress());
                         } else {
-                            Toast.makeText(getApplicationContext(), "Finishing Date can not be antecedent to the Starting Date", Toast.LENGTH_SHORT).show();
+                            buttonCulturalInterestsExploration.setClickable(false);
+//                            Log.i(TAG, "Chosen Finishing Date - Starting Date can not be successive to the Finishing Date");
+//                            Toast.makeText(getApplicationContext(), "Finishing Date can not be antecedent to the Starting Date", Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         //TODO Take info from SQLite if presents
@@ -303,7 +325,10 @@ public class TemporalActivity extends AppCompatActivity {
                 // TODO
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    //                Log.i(TAG + "BarFinish:onStop", "To Define");
+                    if (!isLegalMove(chosenFinishingDate)) {
+
+                        Toast.makeText(getApplicationContext(), "Finishing Date can not be antecedent to the Starting Date", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
@@ -327,11 +352,11 @@ public class TemporalActivity extends AppCompatActivity {
             NetworkInfo networkInfo = check.getActiveNetworkInfo();
             isConnected = networkInfo != null && networkInfo.isConnected();
             if (isConnected) {
-                button.setClickable(true);
+                buttonCulturalInterestsExploration.setClickable(true);
                 //TODO perform all tasks from internet
                 new GetOldestStartingDateTask().execute(REPOSITORY_URL);
             } else {
-                button.setClickable(false);
+                buttonCulturalInterestsExploration.setClickable(false);
                 //TODO Take info from SQLite if presents
                 seekBarStart.setOnTouchListener(new View.OnTouchListener() {
                     @Override
@@ -373,6 +398,8 @@ public class TemporalActivity extends AppCompatActivity {
 
             seekBarStart.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
+                int chosenStartingDate;
+
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
 
@@ -380,20 +407,23 @@ public class TemporalActivity extends AppCompatActivity {
                     NetworkInfo networkInfo = check.getActiveNetworkInfo();
                     isConnected = networkInfo != null && networkInfo.isConnected();
 
-                    Log.i(TAG, "Starting Bar Progress: " + String.valueOf(seekBar.getProgress()));
+                    //Log.i(TAG, "Starting Bar Progress: " + String.valueOf(seekBar.getProgress()));
 
                     if (isConnected) {
                         seekBar.setMax(currentYear - oldestStartingDate);
                         //                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
-                        int chosenStartingDate = oldestStartingDate + progressValue;
+                        chosenStartingDate = oldestStartingDate + progressValue;
 
                         Log.i(TAG + " ChosenStartingDate", String.valueOf(chosenStartingDate));
 
                         if (isLegalMove(chosenStartingDate)) {
+                            buttonCulturalInterestsExploration.setClickable(true);
                             textView1.setText(String.valueOf(chosenStartingDate));
                             seekBar.setProgress(seekBar.getProgress());
                         } else {
-                            Toast.makeText(getApplicationContext(), "Starting Date can not be successive to the Finishing Date", Toast.LENGTH_SHORT).show();
+                            buttonCulturalInterestsExploration.setClickable(false);
+//                            Log.i(TAG, "Chosen Starting Date - Starting Date can not be successive to the Finishing Date");
+//                            Toast.makeText(getApplicationContext(), "Starting Date can not be successive to the Finishing Date", Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         //TODO Take info from SQLite if presents
@@ -419,7 +449,9 @@ public class TemporalActivity extends AppCompatActivity {
                 // TODO
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    //                Log.i(TAG + "BarStart:onStop", "To Define");
+                    if (!isLegalMove(chosenStartingDate)) {
+                        Toast.makeText(getApplicationContext(), "Starting Date can not be successive to the Finishing Date", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
@@ -427,6 +459,8 @@ public class TemporalActivity extends AppCompatActivity {
             //seekBarFinish.setMax(maxFinish);
 
             seekBarFinish.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                int chosenFinishingDate;
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
@@ -441,15 +475,18 @@ public class TemporalActivity extends AppCompatActivity {
 
                         seekBar.setMax(currentYear - oldestStartingDate);
                         //                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
-                        int chosenFinishingDate = currentYear - progressValue;
+                      chosenFinishingDate = currentYear - progressValue;
 
                         ///                Log.i(TAG + " ChosenFinishingDate: ", String.valueOf(chosenFinishingDate));
 
                         if (isLegalMove(chosenFinishingDate)) {
+                            buttonCulturalInterestsExploration.setClickable(true);
                             textView2.setText(String.valueOf(chosenFinishingDate));
                             seekBar.setProgress(seekBar.getProgress());
                         } else {
-                            Toast.makeText(getApplicationContext(), "Finishing Date can not be antecedent to the Starting Date", Toast.LENGTH_SHORT).show();
+                            buttonCulturalInterestsExploration.setClickable(false);
+//                            Log.i(TAG, "Chosen Finishing Date - Starting Date can not be successive to the Finishing Date");
+//                            Toast.makeText(getApplicationContext(), "Finishing Date can not be antecedent to the Starting Date", Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         //TODO Take info from SQLite if presents
@@ -474,7 +511,10 @@ public class TemporalActivity extends AppCompatActivity {
                 // TODO
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    //                Log.i(TAG + "BarFinish:onStop", "To Define");
+                    if (!isLegalMove(chosenFinishingDate)) {
+
+                            Toast.makeText(getApplicationContext(), "Finishing Date can not be antecedent to the Starting Date", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
@@ -686,6 +726,23 @@ public class TemporalActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-        finish();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Really Exit?")
+               .setMessage("Are you sure you want to exit?");
+
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                TemporalActivity.super.onBackPressed();
+                finish();
+            }
+        });
+
+        builder.setNegativeButton(android.R.string.no, null);
+
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
     }
 }
