@@ -54,6 +54,8 @@ public class CulturalInterestAudioDetailsActivity extends AppCompatActivity impl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cultural_interest_audio_details);
 
+        audioPlayer = new MediaPlayer();
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -83,8 +85,10 @@ public class CulturalInterestAudioDetailsActivity extends AppCompatActivity impl
     @Override
     protected void onStop(){
         super.onStop();
-        audioPlayer.release();
-        audioPlayer = null;
+        if(audioPlayer != null) {
+            audioPlayer.release();
+            audioPlayer = null;
+        }
     }
 
     @Override
@@ -177,7 +181,7 @@ public class CulturalInterestAudioDetailsActivity extends AppCompatActivity impl
                 position = spatialThing;
 
                 try {
-                    audioPlayer = new MediaPlayer();
+                    //audioPlayer = new MediaPlayer();
                     audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     //audioPlayer.setDisplay(audioHolder);
                     audioPlayer.setDataSource(audio);
