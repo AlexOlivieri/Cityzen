@@ -35,13 +35,15 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile files('libs/xercesImplMod.jar')
-    compile 'com.android.support:appcompat-v7:24.1.1'
+//    compile group: 'xerces', name: 'xercesImpl', version: '2.11.0'
+    compile group: 'com.ToxicBakery.viewpager.transforms', name: 'view-pager-transforms', version: '1.2.32'
+    compile 'com.android.support:appcompat-v7:24.2.0'
     compile 'org.eclipse.rdf4j:rdf4j-repository-sparql:1.0M2'
     compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
-    compile 'com.android.support:support-v4:24.1.1'
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
+    compile 'com.android.support:support-v4:24.2.0'
+    compile 'org.slf4j:slf4j-simple:1.6.1'
     compile 'com.google.android.gms:play-services:9.4.0'
 }

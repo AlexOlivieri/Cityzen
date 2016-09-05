@@ -1,11 +1,13 @@
 package ch.hevs.datasemlab.cityzen;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +27,8 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
+import java.util.ArrayList;
+
 public class CulturalInterestImageDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = CulturalInterestImageDetailsActivity.class.getSimpleName();
@@ -37,6 +41,11 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
     private LatLng coordinates;
     private String position;
 
+    private int numberOfCulturalInterestsWithThisTitle;
+
+    public static ArrayList<String> mCulturalInterestsList;
+    public static ArrayList<String> mDatesList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +55,8 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
+
 //        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 //        mapFragment.getMapAsync(this);
 
@@ -54,10 +65,31 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
         Bundle extras = getIntent().getExtras();
 
         title = extras.getString(CityzenContracts.TITLE);
+        new GetCulturalInterestsNumberAsyncTask().execute(title);
+        new GetCulturalInterestsList().execute(title);
+
         byte[] imageByte = extras.getByteArray(CityzenContracts.IMAGE);
 
         TextView textViewTitle = (TextView) findViewById(R.id.text_view_title_details);
         ImageView imageView = (ImageView) findViewById(R.id.image_view_image_details);
+        imageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Log.i(TAG, "On Long Click");
+
+                Intent intent = new Intent(getApplicationContext(), TimeTravelActivity.class);
+                intent.putExtra(CityzenContracts.TITLE, title);
+                intent.putExtra(CityzenContracts.NUMBER_OF_CULTURAL_INTERESTS, numberOfCulturalInterestsWithThisTitle);
+                if(mCulturalInterestsList == null || mDatesList == null){
+                    Log.i(TAG, "one of the list is null");
+                }
+                intent.putExtra(CityzenContracts.IMAGES_ARRAY_LIST, mCulturalInterestsList);
+                intent.putExtra(CityzenContracts.DATES_ARRAY_LIST, mDatesList);
+                startActivity(intent);
+                return true;
+            }
+        });
+
         textViewDescription = (TextView) findViewById(R.id.text_view_description_details);
 
         textViewTitle.setText(title);
@@ -147,6 +179,130 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
             }
             mMap.addMarker(new MarkerOptions().position(coordinates).title(position));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
+        }
+    }
+
+    private class GetCulturalInterestsNumberAsyncTask extends AsyncTask<String, Void, Integer> {
+
+
+        @Override
+        protected Integer doInBackground(String... strings) {
+
+            Repository repo = new SPARQLRepository(TemporalActivity.REPOSITORY_URL);
+            repo.initialize();
+
+            RepositoryConnection conn = repo.getConnection();
+
+            String title = strings[0];
+
+            TupleQueryResult result = null;
+
+            try {
+                StringBuilder qb = new StringBuilder();
+
+                qb.append("PREFIX edm: <http://www.europeana.eu/schemas/edm#> \n");
+                qb.append("PREFIX dc: <http://purl.org/dc/elements/1.1/> \n");
+
+                qb.append(" SELECT (COUNT(DISTINCT ?culturalInterest) AS ?count) \n ");
+
+                qb.append(" WHERE {?culturalInterest dc:title ");
+                qb.append("\"" + title + "\" . \n } ");
+
+                Log.i(TAG, qb.toString());
+
+                result = conn.prepareTupleQuery(QueryLanguage.SPARQL, qb.toString()).evaluate();
+
+            } finally {
+                conn.close();
+            }
+
+            Integer count = Integer.valueOf(result.next().getBinding("count").getValue().stringValue());
+
+            Log.i(TAG, "CulturalInterest Number - doInBackgrouund: " + String.valueOf(count.intValue()));
+
+            return count;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            super.onPostExecute(result);
+
+            numberOfCulturalInterestsWithThisTitle = result.intValue();
+            Log.i(TAG, "CulturalInterest Number - onPostExecute: " + String.valueOf(numberOfCulturalInterestsWithThisTitle));
+
+        }
+    }
+
+    private class GetCulturalInterestsList extends AsyncTask<String, Void, TupleQueryResult> {
+
+        @Override
+        protected TupleQueryResult doInBackground(String... strings) {
+
+            String title = strings[0];
+
+            Repository repo = new SPARQLRepository(TemporalActivity.REPOSITORY_URL);
+            repo.initialize();
+
+            RepositoryConnection conn = repo.getConnection();
+
+            TupleQueryResult result = null;
+
+            try {
+                StringBuilder qb = new StringBuilder();
+
+                qb.append("PREFIX schema: <http://www.hevs.ch/datasemlab/cityzen/schema#> \n");
+                qb.append("PREFIX owlTime: <http://www.w3.org/TR/owl-time#> \n");
+                qb.append("PREFIX edm: <http://www.europeana.eu/schemas/edm#> \n");
+                qb.append("PREFIX dc: <http://purl.org/dc/elements/1.1/> \n");
+                qb.append("PREFIX dcterms: <http://purl.org/dc/terms/> \n");
+
+                qb.append(" SELECT ?date ?imageURL \n ");
+                qb.append(" WHERE { \n");
+                qb.append(" ?culturalInterest dc:title ");
+                qb.append("\"" +title + "\" ; \n ");
+                qb.append("			dc:description ?description . \n");
+                qb.append(" ?digitalrepresentationAggregator edm:aggregatedCHO ?culturalInterest ; \n");
+                qb.append(" 		edm:hasView ?digitalrepresentation ; \n");
+                qb.append(" 		owlTime:hasBeginning ?beginningInstant . \n");
+                qb.append(" ?beginningInstant owlTime:inXSDDateTime ?date . \n");
+                qb.append(" ?digitalrepresentation dcterms:hasPart ?digitalItem . \n");
+                qb.append(" ?digitalItem schema:thumbnail_url ?imageURL . }\n");
+
+                qb.append(" ORDER BY DESC(?date) \n");
+
+                result = conn.prepareTupleQuery(QueryLanguage.SPARQL, qb.toString()).evaluate();
+
+            } finally {
+                conn.close();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(TupleQueryResult result) {
+            super.onPostExecute(result);
+            int i=0;
+
+            mCulturalInterestsList = new ArrayList<>();
+            mDatesList = new ArrayList<>();
+
+            while (result.hasNext()) {
+                BindingSet bs = result.next();
+
+                Value dateValue = bs.getValue("date");
+                Value imageURLValue = bs.getValue("imageURL");
+
+                String date = dateValue.stringValue();
+                String imageURL = imageURLValue.stringValue();
+
+                Log.i(TAG, "date: " + date);
+                Log.i(TAG, "imageURL: " + imageURL);
+
+                mDatesList.add(date);
+                mCulturalInterestsList.add(imageURL);
+            }
+            Log.i(TAG, "date List size:" + mDatesList.size());
+            Log.i(TAG, "url List size:" + mCulturalInterestsList.size());
         }
     }
 }

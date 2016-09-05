@@ -98,8 +98,6 @@ public class TemporalActivity extends AppCompatActivity {
 //        networkChangeBroadcastReceiver = new NetworkChangeBroadcastReceiver(networkChangeHandler);
 //        registerReceiver(networkChangeBroadcastReceiver, networkingFilter);
 
-        Log.i(TAG, "On Create");
-
         SharedPreferences sharedPreferences = this.getSharedPreferences(CityzenContracts.APPLICATION_PREFERENCES, Context.MODE_PRIVATE);
         startingDateFromPreferences = sharedPreferences.getInt(CityzenContracts.STARTING_DATE, -1);
         finishingDateFromPreferences = sharedPreferences.getInt(CityzenContracts.FINISHING_DATE, -1);
@@ -113,7 +111,7 @@ public class TemporalActivity extends AppCompatActivity {
 
         buttonCulturalInterestsExploration = (Button) findViewById(R.id.button_go);
 
-        Button timeTravelButton = (Button) findViewById(R.id.time_travel);
+//        Button timeTravelButton = (Button) findViewById(R.id.time_travel);
 
         currentYear = getCurrentYear();
     }
@@ -129,13 +127,13 @@ public class TemporalActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
 
+        Log.i(TAG, "On Resume");
+
         SharedPreferences sharedPreferences = this.getSharedPreferences(CityzenContracts.APPLICATION_PREFERENCES, Context.MODE_PRIVATE);
         intervalAlreadyChosen = sharedPreferences.getBoolean(CityzenContracts.INTERVAL_ALREADY_CHOSEN, false);
         intervalToBeChanged = sharedPreferences.getBoolean(CityzenContracts.INTERVAL_TO_BE_CHANGED, true);
         startingDateFromPreferences = sharedPreferences.getInt(CityzenContracts.STARTING_DATE, -1);
         finishingDateFromPreferences = sharedPreferences.getInt(CityzenContracts.FINISHING_DATE, -1);
-
-        Log.i(TAG, "On Resume");
 
         Log.i(TAG, "Combination: " + String.valueOf(intervalAlreadyChosen) + " - " + String.valueOf(intervalToBeChanged));
 
@@ -147,10 +145,10 @@ public class TemporalActivity extends AppCompatActivity {
 
         if (intervalAlreadyChosen && !intervalToBeChanged) {
 
+            Log.i(TAG, "TRUE - FALSE");
+
             Log.i(TAG, "Date from Preferences: " + startingDateFromPreferences + " - " + finishingDateFromPreferences);
 
-            //TODO - Undo once working properly the CulturalInterestsGalleryActivity3
-            //Intent intent = new Intent(this, CulturalInterestsGalleryActivityFromDB.class);
             Intent intent = new Intent(this, CulturalInterestsGalleryActivity3.class);
             intent.putExtra(CityzenContracts.STARTING_DATE, startingDateFromPreferences);
             intent.putExtra(CityzenContracts.FINISHING_DATE, finishingDateFromPreferences);
@@ -161,6 +159,8 @@ public class TemporalActivity extends AppCompatActivity {
         //////////////////////////////////////// FALSE - TRUE ////////////////////////////////////////
 
         else if(!intervalAlreadyChosen && intervalToBeChanged) {
+
+            Log.i(TAG, "FALSE - TRUE");
 
             check = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = check.getActiveNetworkInfo();
@@ -229,7 +229,7 @@ public class TemporalActivity extends AppCompatActivity {
                         //                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
                         chosenStartingDate = oldestStartingDate + progressValue;
 
-                        Log.i(TAG + " ChosenStartingDate", String.valueOf(chosenStartingDate));
+//                        Log.i(TAG + " ChosenStartingDate", String.valueOf(chosenStartingDate));
 
                         if (isLegalMove(chosenStartingDate)) {
                             buttonCulturalInterestsExploration.setClickable(true);
@@ -337,6 +337,8 @@ public class TemporalActivity extends AppCompatActivity {
 
         else if(intervalAlreadyChosen && intervalToBeChanged) {
 
+            Log.i(TAG, "TRUE - TRUE");
+
             textView1.setText(String.valueOf(startingDateFromPreferences));
             textView2.setText(String.valueOf(finishingDateFromPreferences));
 
@@ -414,7 +416,7 @@ public class TemporalActivity extends AppCompatActivity {
                         //                Log.i(TAG + "Progress Value", String.valueOf(progressValue));
                         chosenStartingDate = oldestStartingDate + progressValue;
 
-                        Log.i(TAG + " ChosenStartingDate", String.valueOf(chosenStartingDate));
+//                        Log.i(TAG + " ChosenStartingDate", String.valueOf(chosenStartingDate));
 
                         if (isLegalMove(chosenStartingDate)) {
                             buttonCulturalInterestsExploration.setClickable(true);
@@ -672,7 +674,7 @@ public class TemporalActivity extends AppCompatActivity {
                 qb.append("ORDER BY ?startingDate");
                 qb.append(" LIMIT 1 ");
 
-                Log.i(TAG, qb.toString());
+//                Log.i(TAG, qb.toString());
 
                 TupleQueryResult result =
                         conn.prepareTupleQuery(QueryLanguage.SPARQL, qb.toString()).evaluate();

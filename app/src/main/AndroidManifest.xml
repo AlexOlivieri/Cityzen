@@ -24,7 +24,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity android:name=".CulturalInterestImageDetailsActivity">
             <meta-data
@@ -34,7 +33,6 @@
         <activity android:name=".CulturalInterestsGalleryActivity3" />
         <activity android:name=".CulturalInterestVideoDetailsActivity" />
         <activity android:name=".CulturalInterestAudioDetailsActivity" />
-        <activity android:name=".CulturalInterestsGalleryActivityFromDB" />
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -43,6 +41,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD_DBmyjuHhsCDHxygwZCI02a0q6AZH1hE" />
 
+        <activity android:name=".TimeTravelActivity"></activity>
     </application>
 
 </manifest>
