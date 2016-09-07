@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.MediaController;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -49,8 +48,6 @@ public class CulturalInterestVideoDetailsActivity extends AppCompatActivity impl
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        Toast.makeText(this, TAG, Toast.LENGTH_SHORT).show();
-
         Bundle extras = getIntent().getExtras();
 
         title = extras.getString(CityzenContracts.TITLE);
@@ -61,12 +58,10 @@ public class CulturalInterestVideoDetailsActivity extends AppCompatActivity impl
         videoView = (VideoView) findViewById(R.id.video_view_details);
 
         videoController = new MediaController(this);
+        videoController.setAnchorView(videoView);
         videoView.setMediaController(videoController);
 
-
         textViewTitle.setText(title);
-//        Bitmap imageBitmap = BitmapFactory.decodeByteArray(imageByte, 0, imageByte.length);
-//        imageView.setImageBitmap(Bitmap.createScaledBitmap(imageBitmap, 800, 600, false));
 
         new GetCulturalInterestsDescription().execute(title);
     }
@@ -120,8 +115,6 @@ public class CulturalInterestVideoDetailsActivity extends AppCompatActivity impl
                 qb.append(" ?digitalrepresentation dcterms:hasPart ?digitalItem . \n");
                 qb.append(" ?digitalItem schema:image_url ?video . }\n");
 
-                Log.i(TAG + " query: ", qb.toString());
-
                 result = conn.prepareTupleQuery(QueryLanguage.SPARQL, qb.toString()).evaluate();
 
             } finally {
@@ -155,6 +148,9 @@ public class CulturalInterestVideoDetailsActivity extends AppCompatActivity impl
                 coordinates = new LatLng(Double.valueOf(latitude), Double.valueOf(longitude));
                 position = spatialThing;
                 textViewDescription.setText(description);
+
+                Log.i(TAG, "URI to String: " + videoURI.toString());
+
                 videoView.setVideoURI(videoURI);
                 videoView.start();
             }
