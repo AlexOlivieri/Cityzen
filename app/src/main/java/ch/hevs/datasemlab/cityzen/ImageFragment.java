@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.database.MatrixCursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -50,7 +48,9 @@ public class ImageFragment extends Fragment {
     private int mStartingDate;
     private int mFinishingDate;
 
-    private String[] mCursorColumnsTitle = {"_id", "Title", "Image"};
+    private String imageURL;
+
+    private String[] mCursorColumnsTitle = {"_id", "Title", "Image", "ImageURL"};
 
     private MatrixCursor mCursorCulturalInterests = new MatrixCursor(mCursorColumnsTitle);
 
@@ -101,19 +101,25 @@ public class ImageFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), CulturalInterestImageDetailsActivity.class);
-                adapterView.getItemAtPosition(position);
+
+//                adapterView.getItemAtPosition(position);
+                MatrixCursor culturalInterestsMatrix = (MatrixCursor) adapterView.getItemAtPosition(position);
+                String imageUrl = (String) culturalInterestsMatrix.getString(3);
+                Log.i(TAG, "image URL: " +imageUrl);
 
                 TextView textView = (TextView) view.findViewById(R.id.text_view_cultural_item_title);
                 intent.putExtra(CityzenContracts.TITLE, textView.getText());
 
                 ImageView imageView = (ImageView) view.findViewById(R.id.image_view_cultural_interest_image);
-                Drawable drawable = imageView.getDrawable();
-                BitmapDrawable bitmapDrawable = ((BitmapDrawable) drawable);
-                Bitmap bitmap = bitmapDrawable .getBitmap();
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                byte[] imageInByte = stream.toByteArray();
-                intent.putExtra(CityzenContracts.IMAGE, imageInByte);
+//                Drawable drawable = imageView.getDrawable();
+//                BitmapDrawable bitmapDrawable = ((BitmapDrawable) drawable);
+//                Bitmap bitmap = bitmapDrawable .getBitmap();
+//                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+//                byte[] imageInByte = stream.toByteArray();
+//                intent.putExtra(CityzenContracts.IMAGE, imageInByte);
+                intent.putExtra(CityzenContracts.IMAGE, imageUrl);
+
                 Log.i(TAG, String.valueOf(textView.getText()));
                 startActivity(intent);
             }
@@ -164,7 +170,7 @@ public class ImageFragment extends Fragment {
 
     Handler handlerImage = new Handler() {
 
-        private Object[] rowValues = new Object[3];
+        private Object[] rowValues = new Object[4];
 
         @Override
         public void handleMessage(Message msg) {
@@ -173,10 +179,12 @@ public class ImageFragment extends Fragment {
             String identifier = bundle.getString("_id");
             String title = bundle.getString("Title");
             byte[] image = bundle.getByteArray("Image");
+            imageURL = bundle.getString("ImageURL");
 
             rowValues[0] = identifier;
             rowValues[1] = title;
             rowValues[2] = image;
+            rowValues[3] = imageURL;
 
             mCursorCulturalInterests.addRow(rowValues);
 
@@ -271,6 +279,7 @@ public class ImageFragment extends Fragment {
                         bundle.putString("_id", String.valueOf(identifier));
                         bundle.putString("Title", title);
                         bundle.putByteArray("Image", bitmapArray);
+                        bundle.putString("ImageURL", imageURL);
 
                         identifier++;
 

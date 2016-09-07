@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_weight="9"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"/>
+        android:gravity="center"/>
 
     <TextView
         android:id="@+id/year_text_view"
@@ -16,7 +16,7 @@
         android:layout_weight="1"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Default"
-        android:gravity="center"
+        android:gravity="center_horizontal"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 

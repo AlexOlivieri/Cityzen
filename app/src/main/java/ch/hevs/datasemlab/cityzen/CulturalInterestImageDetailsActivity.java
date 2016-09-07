@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +26,10 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class CulturalInterestImageDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -34,8 +37,10 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
     private static final String TAG = CulturalInterestImageDetailsActivity.class.getSimpleName();
 
     private String title;
+    private String imageURL;
 
     private TextView textViewDescription;
+    private ImageView imageView;
 
     private GoogleMap mMap;
     private LatLng coordinates;
@@ -60,18 +65,20 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
 //        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 //        mapFragment.getMapAsync(this);
 
-        Toast.makeText(this, TAG, Toast.LENGTH_SHORT).show();
-
         Bundle extras = getIntent().getExtras();
-
         title = extras.getString(CityzenContracts.TITLE);
+        imageURL = extras.getString(CityzenContracts.IMAGE);
+
+        Log.i(TAG, "IMAGE URL: " + imageURL);
+
         new GetCulturalInterestsNumberAsyncTask().execute(title);
         new GetCulturalInterestsList().execute(title);
 
-        byte[] imageByte = extras.getByteArray(CityzenContracts.IMAGE);
+
+//        byte[] imageByte = extras.getByteArray(CityzenContracts.IMAGE);
 
         TextView textViewTitle = (TextView) findViewById(R.id.text_view_title_details);
-        ImageView imageView = (ImageView) findViewById(R.id.image_view_image_details);
+        imageView = (ImageView) findViewById(R.id.image_view_image_details);
         imageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -93,8 +100,11 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
         textViewDescription = (TextView) findViewById(R.id.text_view_description_details);
 
         textViewTitle.setText(title);
-        Bitmap imageBitmap = BitmapFactory.decodeByteArray(imageByte, 0, imageByte.length);
-        imageView.setImageBitmap(Bitmap.createScaledBitmap(imageBitmap, 800, 600, false));
+        new ImageViewLoader().execute(imageURL);
+
+
+//        Bitmap imageBitmap = BitmapFactory.decodeByteArray(imageByte, 0, imageByte.length);
+//        imageView.setImageBitmap(Bitmap.createScaledBitmap(imageBitmap, 800, 600, false));
 
         new GetCulturalInterestsDescription().execute(title);
     }
@@ -303,6 +313,39 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
             }
             Log.i(TAG, "date List size:" + mDatesList.size());
             Log.i(TAG, "url List size:" + mCulturalInterestsList.size());
+        }
+    }
+
+    private class ImageViewLoader extends AsyncTask<String, Void, Bitmap> {
+
+        @Override
+        protected Bitmap doInBackground(String... strings) {
+
+            String title = strings[0];
+
+            URL url = null;
+            Bitmap bitmap = null;
+
+            try {
+                url = new URL(imageURL);
+                InputStream inputStream = url.openStream();
+                bitmap = BitmapFactory.decodeStream(inputStream);
+                //bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            }catch (MalformedURLException e){
+                e.printStackTrace();
+            }catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Title: " + title);
+            }
+
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            super.onPostExecute(result);
+
+            imageView.setImageBitmap(result);
         }
     }
 }
