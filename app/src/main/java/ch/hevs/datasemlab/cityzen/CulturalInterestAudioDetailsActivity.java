@@ -68,6 +68,7 @@ public class CulturalInterestAudioDetailsActivity extends AppCompatActivity impl
         byte[] imageByte = extras.getByteArray(CityzenContracts.IMAGE);
 
         TextView textViewTitle = (TextView) findViewById(R.id.text_view_title_details);
+//        textViewTitle.setBackgroundColor(Color.GREEN);
         textViewDescription = (TextView) findViewById(R.id.text_view_description_details);
 
 

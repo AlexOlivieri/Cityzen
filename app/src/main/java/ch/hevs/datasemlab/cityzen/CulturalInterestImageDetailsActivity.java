@@ -78,6 +78,7 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
 //        byte[] imageByte = extras.getByteArray(CityzenContracts.IMAGE);
 
         TextView textViewTitle = (TextView) findViewById(R.id.text_view_title_details);
+//        textViewTitle.setBackgroundColor(Color.GREEN);
         imageView = (ImageView) findViewById(R.id.image_view_image_details);
         imageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override

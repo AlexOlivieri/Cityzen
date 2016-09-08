@@ -59,7 +59,7 @@ public class CulturalInterestsAdapter extends CursorAdapter{
         }
 
         Bitmap image = BitmapFactory.decodeByteArray(imageByte, 0, imageByte.length);
-        imageView.setImageBitmap(Bitmap.createScaledBitmap(image, 160, 160, false));
+        imageView.setImageBitmap(Bitmap.createScaledBitmap(image, 200, 200, false));
         textViewTitle.setText(title);
         //textViewDescription.setText(description);
     }

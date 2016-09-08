@@ -54,6 +54,7 @@ public class CulturalInterestVideoDetailsActivity extends AppCompatActivity impl
         //byte[] imageByte = extras.getByteArray(CityzenContracts.IMAGE);
 
         TextView textViewTitle = (TextView) findViewById(R.id.text_view_title_details);
+//        textViewTitle.setBackgroundColor(Color.GREEN);
         textViewDescription = (TextView) findViewById(R.id.text_view_description_details);
         videoView = (VideoView) findViewById(R.id.video_view_details);
 
