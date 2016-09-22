@@ -104,14 +104,14 @@ public class TemporalActivity extends AppCompatActivity {
         intervalAlreadyChosen = sharedPreferences.getBoolean(CityzenContracts.INTERVAL_ALREADY_CHOSEN, false);
         intervalToBeChanged = sharedPreferences.getBoolean(CityzenContracts.INTERVAL_TO_BE_CHANGED, true);
 
+        Log.i(TAG, startingDateFromPreferences + ", " + finishingDateFromPreferences + ", " + intervalAlreadyChosen + ", " + intervalToBeChanged);
+
         seekBarStart = (SeekBar) findViewById(R.id.seek_bar_start);
         seekBarFinish = (SeekBar) findViewById(R.id.seek_bar_finish);
         textView1 = (TextView) findViewById(R.id.edit_text_start);
         textView2 = (TextView) findViewById(R.id.edit_text_finish);
 
         buttonCulturalInterestsExploration = (Button) findViewById(R.id.button_go);
-
-//        Button timeTravelButton = (Button) findViewById(R.id.time_travel);
 
         currentYear = getCurrentYear();
     }
@@ -134,6 +134,8 @@ public class TemporalActivity extends AppCompatActivity {
         intervalToBeChanged = sharedPreferences.getBoolean(CityzenContracts.INTERVAL_TO_BE_CHANGED, true);
         startingDateFromPreferences = sharedPreferences.getInt(CityzenContracts.STARTING_DATE, -1);
         finishingDateFromPreferences = sharedPreferences.getInt(CityzenContracts.FINISHING_DATE, -1);
+
+        Log.i(TAG, startingDateFromPreferences + ", " + finishingDateFromPreferences + ", " + intervalAlreadyChosen + ", " + intervalToBeChanged);
 
         Log.i(TAG, "Combination: " + String.valueOf(intervalAlreadyChosen) + " - " + String.valueOf(intervalToBeChanged));
 
@@ -211,12 +213,17 @@ public class TemporalActivity extends AppCompatActivity {
             textView1.setText(String.valueOf(startingDateFromPreferences));
             textView2.setText(String.valueOf(finishingDateFromPreferences));
 
+            seekBarStart.setProgress(0);
+            seekBarFinish.setProgress(0);
+
             seekBarStart.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
                 int chosenStartingDate;
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+
+                    Log.i(TAG, "On Progress Change: SeekBarStart - FALSE/TRUE");
 
                     check = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                     NetworkInfo networkInfo = check.getActiveNetworkInfo();
@@ -280,6 +287,8 @@ public class TemporalActivity extends AppCompatActivity {
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+
+                    Log.i(TAG, "On Progress Change: SeekBarFinish - FALSE/TRUE");
 
                     check = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                     NetworkInfo networkInfo = check.getActiveNetworkInfo();
@@ -395,6 +404,10 @@ public class TemporalActivity extends AppCompatActivity {
 //                seekBarFinish.setProgress(currentYear - finishingDateFromPreferences);
 //            }
 
+            //TODO
+            //T
+
+            //T
             Log.i(TAG, "Progress to be set: " + (startingDateFromPreferences - oldestStartingDate));
             //seekBarStart.setProgress(startingDateFromPreferences - oldestStartingDate);
 
@@ -404,6 +417,8 @@ public class TemporalActivity extends AppCompatActivity {
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+
+                    Log.i(TAG, "On Progress Change: SeekBarStart - TRUE/TRUE");
 
                     check = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                     NetworkInfo networkInfo = check.getActiveNetworkInfo();
@@ -466,6 +481,8 @@ public class TemporalActivity extends AppCompatActivity {
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+
+                    Log.i(TAG, "On Progress Change: SeekBarFinish - TRUE/TRUE");
 
                     check = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                     NetworkInfo networkInfo = check.getActiveNetworkInfo();
@@ -704,12 +721,13 @@ public class TemporalActivity extends AppCompatActivity {
 //            editor.putInt(oldestDate, oldestStartingDate);
 //            editor.commit();
 
-//            // If I put these here it does not work
-//            seekBarStart.setMax(currentYear - oldestStartingDate);
-//            seekBarFinish.setMax(currentYear - oldestStartingDate);
 
-            seekBarStart.setProgress(startingDateFromPreferences - oldestStartingDate);
-            seekBarFinish.setProgress(currentYear - finishingDateFromPreferences);
+//            seekBarStart.setProgress(startingDateFromPreferences - oldestStartingDate);
+//            Log.i(TAG, "Set Bar Starting: " + (startingDateFromPreferences - oldestStartingDate));
+//            Log.i(TAG, "Set Bar Finish: " + (currentYear - finishingDateFromPreferences));
+//            seekBarFinish.setProgress(currentYear - finishingDateFromPreferences);
+//            Log.i(TAG, "Progress Bar Starting: " + seekBarStart.getProgress());
+//            Log.i(TAG, "Progress Bar Finish: " + seekBarFinish.getProgress());
 
             Log.i(TAG, "Interval Already Chosen Value" + String.valueOf(intervalAlreadyChosen));
             Log.i(TAG, "Starting Date From Preference" + String.valueOf(startingDateFromPreferences));

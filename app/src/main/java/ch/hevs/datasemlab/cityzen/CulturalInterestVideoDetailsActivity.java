@@ -32,6 +32,7 @@ public class CulturalInterestVideoDetailsActivity extends AppCompatActivity impl
 
     private TextView textViewDescription;
     private VideoView videoView;
+    private int videoPosition = 0;
 
     private MediaController videoController;
 
@@ -58,6 +59,8 @@ public class CulturalInterestVideoDetailsActivity extends AppCompatActivity impl
         textViewDescription = (TextView) findViewById(R.id.text_view_description_details);
         videoView = (VideoView) findViewById(R.id.video_view_details);
 
+        videoView.requestFocus();
+
         videoController = new MediaController(this);
         videoController.setAnchorView(videoView);
         videoView.setMediaController(videoController);
@@ -65,6 +68,20 @@ public class CulturalInterestVideoDetailsActivity extends AppCompatActivity impl
         textViewTitle.setText(title);
 
         new GetCulturalInterestsDescription().execute(title);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putInt("Position", videoView.getCurrentPosition());
+        videoView.pause();
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+        videoPosition = savedInstanceState.getInt("Position");
+        videoView.seekTo(videoPosition);
     }
 
     @Override
@@ -116,6 +133,7 @@ public class CulturalInterestVideoDetailsActivity extends AppCompatActivity impl
                 qb.append(" ?digitalrepresentation dcterms:hasPart ?digitalItem . \n");
                 qb.append(" ?digitalItem schema:image_url ?video . }\n");
 
+
                 result = conn.prepareTupleQuery(QueryLanguage.SPARQL, qb.toString()).evaluate();
 
             } finally {
@@ -128,7 +146,7 @@ public class CulturalInterestVideoDetailsActivity extends AppCompatActivity impl
         protected void onPostExecute(TupleQueryResult result) {
             super.onPostExecute(result);
             int i=0;
-            while (result.hasNext()) {
+            if (result.hasNext()) {
                 BindingSet bs = result.next();
 
                 Value descriptionValue = bs.getValue("description");
@@ -153,7 +171,15 @@ public class CulturalInterestVideoDetailsActivity extends AppCompatActivity impl
                 Log.i(TAG, "URI to String: " + videoURI.toString());
 
                 videoView.setVideoURI(videoURI);
+//                videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//
+//                    public void onPrepared(MediaPlayer mediaPlayer) {
+//                        videoView.start();
+//                    }
+//                });
+
                 videoView.start();
+
             }
             mMap.addMarker(new MarkerOptions().position(coordinates).title(position));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));

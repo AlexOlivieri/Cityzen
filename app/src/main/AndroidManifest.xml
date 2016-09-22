@@ -19,11 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".TemporalActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".CulturalInterestImageDetailsActivity">
             <meta-data
@@ -41,7 +37,14 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD_DBmyjuHhsCDHxygwZCI02a0q6AZH1hE" />
 
-        <activity android:name=".TimeTravelActivity"></activity>
+        <activity android:name=".TimeTravelActivity" />
+        <activity android:name=".IntroActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
