@@ -55,7 +55,8 @@
         android:text="Participate"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:onClick="goToItinerary" />
 
     <Button
         android:id="@+id/button_explore"

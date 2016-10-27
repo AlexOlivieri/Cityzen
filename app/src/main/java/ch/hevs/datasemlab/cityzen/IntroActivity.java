@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 
+import ch.hevs.datasemlab.cityzen.timetravel.ItineraryActivity;
+
 public class IntroActivity extends AppCompatActivity {
 
     @Override
@@ -55,12 +57,17 @@ public class IntroActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void goToItinerary(View view){
+        Intent intent = new Intent(this, ItineraryActivity.class);
+        startActivity(intent);
+    }
+
     public void showDetails(View view){
         LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
 
         View detailsView = layoutInflater.inflate(R.layout.details_popup_layout, null);
 //        final PopupWindow popupWindow = new PopupWindow(detailsView, LayoutParams.WRAP_CONTENT , LayoutParams.WRAP_CONTENT);
-        final PopupWindow popupWindow = new PopupWindow(detailsView, 800 , 600);
+        final PopupWindow popupWindow = new PopupWindow(detailsView, 1200 , 800);
 //        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
 
 

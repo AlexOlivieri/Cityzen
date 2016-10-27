@@ -1,6 +1,8 @@
 package ch.hevs.datasemlab.cityzen;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -99,6 +102,8 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
         });
 
         textViewDescription = (TextView) findViewById(R.id.text_view_description_details);
+
+        Button addButton = (Button) findViewById(R.id.button_add_interest);
 
         textViewTitle.setText(title);
         new ImageViewLoader().execute(imageURL);
@@ -315,6 +320,30 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
             Log.i(TAG, "date List size:" + mDatesList.size());
             Log.i(TAG, "url List size:" + mCulturalInterestsList.size());
         }
+    }
+
+    public void addInterestToItinerary(View view){
+
+        int numberOfPreferences = 0;
+
+//        SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.itinery),Context.MODE_PRIVATE);
+//        sharedPref.edit().clear().commit();
+
+        SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.itinery),Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        if(!sharedPref.getAll().isEmpty())
+            numberOfPreferences = sharedPref.getAll().size();
+
+        String key = String.valueOf(numberOfPreferences);
+
+        Log.i(TAG, "Key: " + key);
+
+        editor.putString(key, title);
+        editor.commit();
+
+        Intent intent = new Intent(this, IntroActivity.class);
+        startActivity(intent);
     }
 
     private class ImageViewLoader extends AsyncTask<String, Void, Bitmap> {

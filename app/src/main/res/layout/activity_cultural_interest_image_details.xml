@@ -44,7 +44,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignRight="@id/image_view_image_details"
                 android:layout_below="@id/text_view_title_details"
-                android:background="@android:color/holo_blue_bright" />
+                android:background="@android:color/holo_blue_bright"
+                android:onClick="addInterestToItinerary" />
 
             <fragment
                 android:layout_width="match_parent"

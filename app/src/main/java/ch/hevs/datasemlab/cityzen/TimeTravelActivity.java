@@ -42,10 +42,10 @@ public class TimeTravelActivity extends FragmentActivity {
         mCulturalInterestsList = extras.getStringArrayList(CityzenContracts.IMAGES_ARRAY_LIST);
         mDatesList = extras.getStringArrayList(CityzenContracts.DATES_ARRAY_LIST);
 
-
-        TextView titleView = (TextView) findViewById(R.id.title_text_view);
-        titleView.setText(title);
-        countTextView = (TextView) findViewById(R.id.count_text_view);
+    //TODO
+//        TextView titleView = (TextView) findViewById(R.id.title_text_view);
+//        titleView.setText(title);
+//        countTextView = (TextView) findViewById(R.id.count_text_view);
 
 //        new GetCulturalInterestsList().execute(title);
 //        new GetCulturalInterestsNumberAsyncTask().execute(title);

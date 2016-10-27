@@ -59,10 +59,29 @@ public class SlideFragment extends Fragment {
 //        dateTextView.setText("Date");
 
 
+
+
         //set a random color to the background
         Random rnd = new Random();
         int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
         rootView.setBackgroundColor(color); //set a random color to the background
+
+        float[] hsv = new float[3];
+        Color.RGBToHSV(Color.red(color), Color.green(color),
+                Color.blue(color), hsv);
+        hsv[0] = (hsv[0] + 180) % 360;
+        int textColor = Color.HSVToColor(hsv);
+
+        dateTextView.setTextColor(textColor);
+
+        TextView publisherTextView = (TextView) rootView.findViewById(R.id.publisher_text_view);
+        int provider = rnd.nextInt(100);
+        if(provider < 50){
+            publisherTextView.setText("Médiathèque du Valais");
+        }else{
+            publisherTextView.setText("Digital Valais/Wallis");
+        }
+        publisherTextView.setTextColor(textColor);
 
         return rootView; //return the slide view
     }
