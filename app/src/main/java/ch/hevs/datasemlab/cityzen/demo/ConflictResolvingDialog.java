@@ -53,7 +53,13 @@ public class ConflictResolvingDialog extends DialogFragment {
                 // User clicked OK, so save the mSelectedItems results somewhere
                 // or return them to the component that opened the dialog
             }
-        });
+        }).setNegativeButton(R.string.button_discarded, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick (DialogInterface dialog,int id){
+
+            }
+        }
+        );
 
         return builder.create();
     }

@@ -26,5 +26,6 @@
     <string name="badge_earnt">Barges Earned</string>
     <string name="reputation">User Reputation</string>
     <string name="progress_bar_text">Progress for the next badge</string>
+    <string name="button_discarded">Skip</string>
 
 </resources>
