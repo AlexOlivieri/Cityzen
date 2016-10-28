@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string-array name="cultural_interest_array">
+    <item>Cultural Place</item>
+    <item>Cultural Person</item>
+    <item>Folklore</item>
+    <item>Cultural Object</item>
+    <item>Cultural Event</item>
+</string-array>
+</resources>

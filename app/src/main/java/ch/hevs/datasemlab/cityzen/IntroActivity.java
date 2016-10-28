@@ -1,16 +1,23 @@
 package ch.hevs.datasemlab.cityzen;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+
+
 
 import ch.hevs.datasemlab.cityzen.timetravel.ItineraryActivity;
 
@@ -49,6 +56,34 @@ public class IntroActivity extends AppCompatActivity {
                 popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_main_actions, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        FragmentManager manager = getFragmentManager();
+        Fragment frag = manager.findFragmentByTag("fragment_edit_name");
+        String fragmentName = "fragment_edit_name";
+        if (frag != null) {
+            manager.beginTransaction().remove(frag).commit();
+        }
+        switch (item.getItemId()){
+            case R.id.action_category_settings :
+                CategoryDialog categoryDialog = new CategoryDialog();
+//                categoryDialog.show(manager, "fragment_edit_name");
+                categoryDialog.show(manager, fragmentName);
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 
     public void exploreCulturalInterests(View view){

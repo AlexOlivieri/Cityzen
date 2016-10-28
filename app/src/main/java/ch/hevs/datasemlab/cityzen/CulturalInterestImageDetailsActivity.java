@@ -326,9 +326,6 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
 
         int numberOfPreferences = 0;
 
-//        SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.itinery),Context.MODE_PRIVATE);
-//        sharedPref.edit().clear().commit();
-
         SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.itinery),Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 

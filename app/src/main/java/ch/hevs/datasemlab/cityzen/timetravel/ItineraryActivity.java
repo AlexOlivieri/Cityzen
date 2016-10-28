@@ -25,6 +25,7 @@ public class ItineraryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_itinerary);
 
         SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.itinery), Context.MODE_PRIVATE);
+
         Map<String, ?> sharedPrefMap = sharedPreferences.getAll();
 
         Log.i(TAG, "OnCreate: sharedPreferences size = " + sharedPreferences.getAll().size());
