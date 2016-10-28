@@ -1,4 +1,4 @@
-package ch.hevs.datasemlab.cityzen;
+package ch.hevs.datasemlab.cityzen.demo;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 
 import java.util.ArrayList;
+
+import ch.hevs.datasemlab.cityzen.R;
 
 /**
  * Created by Alex on 10/28/2016.

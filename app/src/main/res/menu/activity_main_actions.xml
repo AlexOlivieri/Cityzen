@@ -4,5 +4,8 @@
     <item android:id="@+id/action_category_settings"
         android:title="@string/action_category_settings"
         app:showAsAction="never"/>
+    <item android:id="@+id/action_see_credibility"
+        android:title="@string/action_credibility"
+        app:showAsAction="ifRoom" />
 
 </menu>

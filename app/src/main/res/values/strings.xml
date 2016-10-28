@@ -21,5 +21,10 @@
     <string name="button_done">Done</string>
     <string name="button_solved">Conflict Solved</string>
     <string name="conflict_title">Tourbillon is located in?</string>
+    <string name="username">Alex Olivieri</string>
+    <string name="action_credibility">User Reputation</string>
+    <string name="badge_earnt">Barges Earned</string>
+    <string name="reputation">User Reputation</string>
+    <string name="progress_bar_text">Progress for the next badge</string>
 
 </resources>

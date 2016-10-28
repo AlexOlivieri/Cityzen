@@ -1,4 +1,4 @@
-package ch.hevs.datasemlab.cityzen.timetravel;
+package ch.hevs.datasemlab.cityzen.demo;
 
 import android.content.Context;
 import android.content.SharedPreferences;

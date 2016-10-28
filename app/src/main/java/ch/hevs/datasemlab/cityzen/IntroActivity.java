@@ -18,8 +18,10 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 
 
-
-import ch.hevs.datasemlab.cityzen.timetravel.ItineraryActivity;
+import ch.hevs.datasemlab.cityzen.demo.CategoryDialog;
+import ch.hevs.datasemlab.cityzen.demo.ConflictResolvingDialog;
+import ch.hevs.datasemlab.cityzen.demo.ItineraryActivity;
+import ch.hevs.datasemlab.cityzen.demo.UserCredibility;
 
 public class IntroActivity extends AppCompatActivity {
 
@@ -80,6 +82,9 @@ public class IntroActivity extends AppCompatActivity {
 //                categoryDialog.show(manager, "fragment_edit_name");
                 categoryDialog.show(manager, fragmentName);
                 break;
+            case R.id.action_see_credibility :
+                Intent intent = new Intent(this, UserCredibility.class);
+                startActivity(intent);
             default:
                 break;
         }

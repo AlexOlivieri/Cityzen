@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import java.net.URL;
 import java.util.Random;
 
 import ch.hevs.datasemlab.cityzen.CityzenContracts;
+import ch.hevs.datasemlab.cityzen.demo.DatePickerDialog;
 import ch.hevs.datasemlab.cityzen.R;
 
 public class SlideFragment extends Fragment {
@@ -55,6 +57,21 @@ public class SlideFragment extends Fragment {
         TextView dateTextView = (TextView)rootView.findViewById(R.id.year_text_view);
         mImageView = (ImageView) rootView.findViewById(R.id.image_view_image_details);
         dateTextView.setText(date);
+
+        dateTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog();
+                datePickerDialog.setMyContext(getContext());
+                FragmentManager manager = getFragmentManager();
+                Fragment frag = manager.findFragmentByTag("fragment_edit_name");
+                String fragmentName = "fragment_edit_name";
+                if (frag != null) {
+                    manager.beginTransaction().remove(frag).commit();
+                }
+                datePickerDialog.show(manager, fragmentName);
+            }
+        });
 //        urlTextView.setText("ImageURL");
 //        dateTextView.setText("Date");
 

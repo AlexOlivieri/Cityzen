@@ -1,10 +1,11 @@
-package ch.hevs.datasemlab.cityzen;
+package ch.hevs.datasemlab.cityzen.demo;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.widget.DatePicker;
 
 import java.util.ArrayList;
 
@@ -12,7 +13,13 @@ import java.util.ArrayList;
  * Created by Alex on 10/28/2016.
  */
 
-public class ConflictResolvingDialog extends DialogFragment {
+public class DatePickerDialog extends DialogFragment {
+
+    private Context myContext;
+
+    public void setMyContext(Context context){
+        this.myContext = context;
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -36,22 +43,13 @@ public class ConflictResolvingDialog extends DialogFragment {
 
         final ArrayList mSelectedItems = new ArrayList();  // Where we track the selected items
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        // Set the dialog title
-        builder.setTitle(R.string.conflict_title).
-                setSingleChoiceItems(R.array.location_conflict_array, -1,
-            new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
 
-                }
-            }
-        ).setPositiveButton(R.string.button_solved, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked OK, so save the mSelectedItems results somewhere
-                // or return them to the component that opened the dialog
-            }
-        });
+        DatePicker picker = new DatePicker(this.myContext);
+
+        builder.setTitle("Choose Year");
+        builder.setView(picker);
+        builder.setNegativeButton("Cancel", null);
+        builder.setPositiveButton("Set", null);
 
         return builder.create();
     }

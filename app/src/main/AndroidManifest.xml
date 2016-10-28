@@ -13,14 +13,13 @@
     <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
 
     <!-- android:theme="@style/AppTheme" -->
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".TemporalActivity"></activity>
+        <activity android:name=".TemporalActivity" />
         <activity android:name=".CulturalInterestImageDetailsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -45,7 +44,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".timetravel.ItineraryActivity"></activity>
+        <activity android:name=".demo.ItineraryActivity" />
+        <activity android:name=".demo.UserCredibility"></activity>
     </application>
 
 </manifest>
