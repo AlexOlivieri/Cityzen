@@ -97,6 +97,17 @@ public class IntroActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void solveConflict(View view){
+        FragmentManager manager = getFragmentManager();
+        Fragment frag = manager.findFragmentByTag("fragment_edit_name");
+        String fragmentName = "fragment_edit_name";
+        if (frag != null) {
+            manager.beginTransaction().remove(frag).commit();
+        }
+        ConflictResolvingDialog dialog = new ConflictResolvingDialog();
+        dialog.show(manager, fragmentName);
+    }
+
     public void showDetails(View view){
         LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
 

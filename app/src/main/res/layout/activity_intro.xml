@@ -78,6 +78,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:text="Dashboard"/>
+        android:text="Dashboard"
+        android:onClick="solveConflict" />
 
 </RelativeLayout>
