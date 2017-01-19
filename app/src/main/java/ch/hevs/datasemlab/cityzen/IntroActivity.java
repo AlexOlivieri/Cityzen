@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 
-
 import ch.hevs.datasemlab.cityzen.demo.CategoryDialog;
 import ch.hevs.datasemlab.cityzen.demo.ConflictResolvingDialog;
 import ch.hevs.datasemlab.cityzen.demo.ItineraryActivity;
@@ -113,25 +112,25 @@ public class IntroActivity extends AppCompatActivity {
         dialog.show(manager, fragmentName);
     }
 
-    public void showDetails(View view){
-        LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-
-        View detailsView = layoutInflater.inflate(R.layout.details_popup_layout, null);
-//        final PopupWindow popupWindow = new PopupWindow(detailsView, LayoutParams.WRAP_CONTENT , LayoutParams.WRAP_CONTENT);
-        final PopupWindow popupWindow = new PopupWindow(detailsView, 1200 , 800);
-//        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-
-
-        Button dismissButton = (Button) detailsView.findViewById(R.id.dismiss_button);
-        dismissButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                popupWindow.dismiss();
-            }
-        });
-
-//        popupWindow.showAsDropDown(view);
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-    }
+//    public void showDetails(View view){
+//        LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+//
+//        View detailsView = layoutInflater.inflate(R.layout.details_popup_layout, null);
+////        final PopupWindow popupWindow = new PopupWindow(detailsView, LayoutParams.WRAP_CONTENT , LayoutParams.WRAP_CONTENT);
+//        final PopupWindow popupWindow = new PopupWindow(detailsView, 1200 , 800);
+////        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+//
+//
+//        Button dismissButton = (Button) detailsView.findViewById(R.id.dismiss_button);
+//        dismissButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                popupWindow.dismiss();
+//            }
+//        });
+//
+////        popupWindow.showAsDropDown(view);
+//        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+//
+//    }
 }

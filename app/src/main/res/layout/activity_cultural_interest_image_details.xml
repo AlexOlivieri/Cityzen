@@ -13,7 +13,6 @@
     tools:context=".CulturalInterestImageDetailsActivity">
 
 
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
@@ -37,16 +36,6 @@
                 android:gravity="center_horizontal"
                 android:contentDescription="@string/image_of_the_cultural_interest" />
 
-            <Button
-                android:id="@+id/button_add_interest"
-                android:text="Add"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:layout_alignRight="@id/image_view_image_details"
-                android:layout_below="@id/text_view_title_details"
-                android:background="@android:color/holo_blue_bright"
-                android:onClick="addInterestToItinerary" />
-
             <fragment
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
@@ -60,6 +49,20 @@
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:layout_below="@id/map"/>
+
+            <Button
+                android:id="@+id/button_add_interest"
+                android:text="Search Similar"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:background="@android:color/holo_blue_bright"
+                android:onClick="searchSimilar"
+                android:layout_marginTop="49dp"
+                android:layout_below="@+id/text_view_title_details"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="290dp"
+                android:layout_marginStart="290dp" />
 
         </RelativeLayout>
 

@@ -33,8 +33,9 @@ public class TemporalActivity extends AppCompatActivity {
 
     private final String TAG = TemporalActivity.class.getSimpleName();
 
-    public static final String REPOSITORY_URL = "http://ec2-52-39-53-29.us-west-2.compute.amazonaws.com:8080/openrdf-sesame/repositories/CityZenDM";
-
+   public static final String REPOSITORY_URL = "http://ec2-52-39-53-29.us-west-2.compute.amazonaws.com:8080/openrdf-sesame/repositories/CityZenDM";
+//    public static final String REPOSITORY_URL = "http://ec2-52-39-53-29.us-west-2.compute.amazonaws.com:8080/openrdf-sesame/repositories/ShabanTest";
+//
     private int currentYear;
 
     private SeekBar seekBarStart;
@@ -702,7 +703,7 @@ public class TemporalActivity extends AppCompatActivity {
                     date = dateValue.stringValue();
 
                 }
-                Log.i(TAG + "date: ", date);
+                Log.i(TAG + " date: ", date);
             } finally {
                 conn.close();
             }

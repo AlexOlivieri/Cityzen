@@ -1,8 +1,6 @@
 package ch.hevs.datasemlab.cityzen;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -10,7 +8,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -34,6 +31,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
+
+import ch.hevs.datasemlab.cityzen.timetravel.SimilarInterestActivity;
 
 public class CulturalInterestImageDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -53,6 +53,10 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
 
     public static ArrayList<String> mCulturalInterestsList;
     public static ArrayList<String> mDatesList;
+
+    public static String TITLES = "titles";
+    public static String LATITUDES = "latitudes";
+    public static String LONGITUDES = "longitudes";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +79,8 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
         Log.i(TAG, "IMAGE URL: " + imageURL);
 
         new GetCulturalInterestsNumberAsyncTask().execute(title);
+
+        //TODO remove
         new GetCulturalInterestsList().execute(title);
 
 
@@ -103,7 +109,7 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
 
         textViewDescription = (TextView) findViewById(R.id.text_view_description_details);
 
-        Button addButton = (Button) findViewById(R.id.button_add_interest);
+//        Button addButton = (Button) findViewById(R.id.button_add_interest);
 
         textViewTitle.setText(title);
         new ImageViewLoader().execute(imageURL);
@@ -193,8 +199,13 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
                 position = spatialThing;
 
             }
-            mMap.addMarker(new MarkerOptions().position(coordinates).title(position));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
+            if(coordinates == null) {
+                Log.e(TAG, "Coordinate null");
+            }else{
+                mMap.addMarker(new MarkerOptions().position(coordinates).title(position));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
+            }
+
         }
     }
 
@@ -322,25 +333,121 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
         }
     }
 
-    public void addInterestToItinerary(View view){
+//    public void searchSimilar(View view){
+//
+//        int numberOfPreferences = 0;
+//
+//        SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.itinery),Context.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedPref.edit();
+//
+//        if(!sharedPref.getAll().isEmpty())
+//            numberOfPreferences = sharedPref.getAll().size();
+//
+//        String key = String.valueOf(numberOfPreferences);
+//
+//        Log.i(TAG, "Key: " + key);
+//
+//        editor.putString(key, title);
+//        editor.commit();
+//
+//        Intent intent = new Intent(this, IntroActivity.class);
+//        startActivity(intent);
+//    }
 
-        int numberOfPreferences = 0;
+    public void searchSimilar(View view){
 
-        SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.itinery),Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
+        StringBuilder qb = new StringBuilder();
 
-        if(!sharedPref.getAll().isEmpty())
-            numberOfPreferences = sharedPref.getAll().size();
+        qb.append("PREFIX schema: <http://www.hevs.ch/datasemlab/cityzen/schema#> \n");
+        qb.append("PREFIX dc: <http://purl.org/dc/elements/1.1/> \n");
+        qb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+        qb.append("PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n");
 
-        String key = String.valueOf(numberOfPreferences);
+        qb.append(" SELECT ?title ?latitude ?longitude \n ");
+        qb.append(" WHERE { \n");
+        qb.append(" ?culturalInterest dc:title ");
+        qb.append("\"" +title + "\" ; \n ");
+        qb.append("			schema:locatedIn ?place ; \n");
+        qb.append("         rdf:type ?class . ");
+        qb.append(" ?culturalInterests schema:locatedIn ?place ; ");
+        qb.append("         dc:title ?title ; ");
+        qb.append("         rdf:type ?class ; ");
+        qb.append("         geo:location ?location . ");
+        qb.append(" ?location geo:lat ?latitude ; ");
+        qb.append("     geo:long ?longitude . }\n");
 
-        Log.i(TAG, "Key: " + key);
+        String queryString = qb.toString();
 
-        editor.putString(key, title);
-        editor.commit();
+        new SearchSimilar().execute(queryString);
+    }
 
-        Intent intent = new Intent(this, IntroActivity.class);
-        startActivity(intent);
+    private class SearchSimilar extends AsyncTask<String, Void, TupleQueryResult> {
+
+        @Override
+        protected TupleQueryResult doInBackground(String... strings) {
+
+            String queryString = strings[0];
+
+            Repository repo = new SPARQLRepository(TemporalActivity.REPOSITORY_URL);
+            repo.initialize();
+
+            RepositoryConnection conn = repo.getConnection();
+
+            TupleQueryResult result = null;
+
+            try {
+
+                result = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString).evaluate();
+
+            } finally {
+                conn.close();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(TupleQueryResult result) {
+            super.onPostExecute(result);
+            int i=0;
+
+            Intent intent = new Intent(getApplicationContext(), SimilarInterestActivity.class);
+
+            List<String> listOfTitles = new ArrayList<String>();
+            List<String> listOfLatitudes = new ArrayList<String>();
+            List<String> listOfLongitudes = new ArrayList<String>();
+
+            while (result.hasNext()) {
+                BindingSet bs = result.next();
+
+                Value titleValue = bs.getValue("title");
+                Value latitudeValue = bs.getValue("latitude");
+                Value longitudeValue = bs.getValue("longitude");
+
+                String title = titleValue.stringValue();
+                String latitude = latitudeValue.stringValue();
+                String longitude = longitudeValue.stringValue();
+
+                Log.i(TAG, "title: " + title);
+                Log.i(TAG, "latitude: " + latitude);
+                Log.i(TAG, "longitude: " + longitude);
+
+                listOfTitles.add(title);
+                listOfLatitudes.add(latitude);
+                listOfLongitudes.add(longitude);
+            }
+            String[] titles = new String[listOfTitles.size()];
+            listOfTitles.toArray(titles);
+            String[] latitudes = new String[listOfLatitudes.size()];
+            listOfLatitudes.toArray(latitudes);
+            String[] longitudes = new String[listOfLongitudes.size()];
+            listOfLongitudes.toArray(longitudes);
+
+            intent.putExtra(TITLES, titles);
+            intent.putExtra(LATITUDES, latitudes);
+            intent.putExtra(LONGITUDES, longitudes);
+
+            startActivity(intent);
+        }
     }
 
     private class ImageViewLoader extends AsyncTask<String, Void, Bitmap> {

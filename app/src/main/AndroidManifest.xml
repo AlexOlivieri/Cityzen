@@ -45,7 +45,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".demo.ItineraryActivity" />
-        <activity android:name=".demo.UserCredibility"></activity>
+        <activity android:name=".demo.UserCredibility" />
+        <activity android:name=".timetravel.SimilarInterestActivity"></activity>
     </application>
 
 </manifest>
