@@ -57,7 +57,7 @@ import static ch.hevs.datasemlab.cityzen.R.id.latitude;
 
 public class IntroActivity2 extends AppCompatActivity implements LocationListener {
 
-    private final String TAG = IntroActivity.class.getSimpleName();
+    private final String TAG = IntroActivity2.class.getSimpleName();
 
     private final int MY_PERMISSION_ACCESS_COURSE_LOCATION = 1;
 
@@ -518,7 +518,7 @@ public class IntroActivity2 extends AppCompatActivity implements LocationListene
             Bundle bundle = msg.getData();
 
             List<NearestCulturalInterestInfo> myList = bundle.getParcelableArrayList(NEAREST_INTEREST_LIST);
-//            Log.i(TAG, String.valueOf(myList.size()));
+            Log.i(TAG, String.valueOf(myList.get(0).getDescription()));
 
             Intent intent = new Intent(getBaseContext(), NearestCulturalInterestsNofiticationManager.class);
 //            intent.putExtra(NEAREST_INTEREST_LIST, (ArrayList<? extends Parcelable>) listOFNearestCI);
@@ -536,21 +536,6 @@ public class IntroActivity2 extends AppCompatActivity implements LocationListene
             } else {
                 alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 5000, pendingIntent);
             }
-
-//            Bundle bundle = msg.getData();
-//            String identifier = bundle.getString("_id");
-//            String title = bundle.getString("Title");
-//            byte[] image = bundle.getByteArray("Image");
-
-//            rowValues[0] = identifier;
-//            rowValues[1] = title;
-//            rowValues[2] = image;
-
-//            mCursorCulturalInterests.addRow(rowValues);
-//
-//            mAdapter = new CulturalInterestsAdapter(getActivity(), mCursorCulturalInterests, 0);
-//            listView.setAdapter(mAdapter);
-
         }
     };
 
