@@ -31,11 +31,29 @@
         android:text="Powered by"
         android:textSize="35dp" />
 
+    <TextView
+        android:id="@+id/latitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/poweredBy"
+        android:text="Powered by"
+        android:textSize="35dp" />
+
+    <TextView
+        android:id="@+id/logitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/latitude"
+        android:text="Powered by"
+        android:textSize="35dp" />
+
     <ImageView
         android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/poweredBy"
+        android:layout_below="@id/logitude"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
 
@@ -71,7 +89,7 @@
         android:onClick="exploreCulturalInterests" />
 
     <Button
-        android:id="@+id/button_dashboard"
+        android:id="@+id/button_test_notification"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/button_participate"
@@ -79,6 +97,6 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:text="Dashboard"
-        android:onClick="solveConflict" />
+        android:onClick="testNotification" />
 
 </RelativeLayout>
