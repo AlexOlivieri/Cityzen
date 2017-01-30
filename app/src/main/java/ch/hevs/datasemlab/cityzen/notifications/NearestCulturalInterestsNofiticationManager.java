@@ -48,9 +48,12 @@ public class NearestCulturalInterestsNofiticationManager extends Service {
 
     public int onStartCommand (Intent intent, int flags, int startId) {
         List<NearestCulturalInterestInfo> listOfNearestCI = intent.getParcelableArrayListExtra(IntroActivity2.NEAREST_INTEREST_LIST);
+//        String listOfNearestCI = intent.getStringExtra(IntroActivity2.NEAREST_INTEREST_LIST);
+//        Toast.makeText(this, "Size: " + listOfNearestCI, Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "Size" + String.valueOf(listOfNearestCI.size()));
 
-        Toast.makeText(this, "Size:" + listOfNearestCI.size(), Toast.LENGTH_SHORT).show();
-        Log.i(TAG, "Size:" + listOfNearestCI.size());
+//        Toast.makeText(this, "Size:" + listOfNearestCI.size(), Toast.LENGTH_SHORT).show();
+//        Log.i(TAG, "Size:" + listOfNearestCI.size());
 
         return START_STICKY;
     }

@@ -13,9 +13,10 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -224,27 +225,30 @@ public class IntroActivity2 extends AppCompatActivity implements LocationListene
         Log.e(TAG, String.valueOf(latitude));
         Log.e(TAG, String.valueOf(longitude));
 
-        GetNearestCulturalInterests getNearestCulturalInterests = new GetNearestCulturalInterests();
+//        GetNearestCulturalInterests getNearestCulturalInterests = new GetNearestCulturalInterests();
+//        String[] coordinates = {String.valueOf(latitude), String.valueOf(longitude)};
+//        getNearestCulturalInterests.execute(coordinates);
+
         String[] coordinates = {String.valueOf(latitude), String.valueOf(longitude)};
-        getNearestCulturalInterests.execute(coordinates);
+        queryNearestCI(coordinates);
 
         textViewLatitude.setText(String.valueOf(latitude));
         textViewLongitude.setText(String.valueOf(longitude));
 
-        Intent intent = new Intent(this, NearestCulturalInterestsNofiticationManager.class);
-        intent.putExtra(NEAREST_INTEREST_LIST, (ArrayList<? extends Parcelable>) listOFNearestCI);
-
-        Log.i(TAG, "List of NearestCI Size: " + listOFNearestCI.size());
-
-        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Activity.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Log.i(TAG, String.valueOf(System.currentTimeMillis()));
-            alarmManager.setExact(AlarmManager.RTC, System.currentTimeMillis() + 5000 , pendingIntent);
-        } else {
-            alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 5000, pendingIntent);
-        }
+//        Intent intent = new Intent(this, NearestCulturalInterestsNofiticationManager.class);
+//        intent.putExtra(NEAREST_INTEREST_LIST, (ArrayList<? extends Parcelable>) listOFNearestCI);
+//
+//        Log.i(TAG, "List of NearestCI Size: " + listOFNearestCI.size());
+//
+//        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Activity.ALARM_SERVICE);
+//        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            Log.i(TAG, String.valueOf(System.currentTimeMillis()));
+//            alarmManager.setExact(AlarmManager.RTC, System.currentTimeMillis() + 5000 , pendingIntent);
+//        } else {
+//            alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 5000, pendingIntent);
+//        }
 
 //            initializeCoordinates(latitude, longitude);
     }
@@ -278,115 +282,197 @@ public class IntroActivity2 extends AppCompatActivity implements LocationListene
 
     }
 
-    private class GetNearestCulturalInterests extends AsyncTask<String, Void, TupleQueryResult> {
+    private void queryNearestCI(String[] coordinates) {
 
-        private double mlatitude;
-        private double mlongitude;
+        final double mlatitude = Double.valueOf(coordinates[0]);
+        final double mlongitude = Double.valueOf(coordinates[1]);
 
-        @Override
-        protected TupleQueryResult doInBackground(String... strings) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
 
-            Repository repo = new SPARQLRepository(TemporalActivity.REPOSITORY_URL);
-            repo.initialize();
+                Repository repo = new SPARQLRepository(TemporalActivity.REPOSITORY_URL);
+                repo.initialize();
 
-            mlatitude = Double.valueOf(strings[0]);
-            mlongitude = Double.valueOf(strings[1]);
+                RepositoryConnection conn = repo.getConnection();
 
-            RepositoryConnection conn = repo.getConnection();
+                TupleQueryResult result = null;
 
-            TupleQueryResult result = null;
+                try {
+                    StringBuilder qb = new StringBuilder();
 
-            try {
-                StringBuilder qb = new StringBuilder();
+                    qb.append("PREFIX schema: <http://www.hevs.ch/datasemlab/cityzen/schema#> \n");
+                    qb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+                    qb.append("PREFIX owlTime: <http://www.w3.org/TR/owl-time#> \n");
+                    qb.append("PREFIX edm: <http://www.europeana.eu/schemas/edm#> \n");
+                    qb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
+                    qb.append("PREFIX dc: <http://purl.org/dc/elements/1.1/> \n");
+                    qb.append("PREFIX dcterms: <http://purl.org/dc/terms/> \n");
+                    qb.append("PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n");
 
-                qb.append("PREFIX schema: <http://www.hevs.ch/datasemlab/cityzen/schema#> \n");
-                qb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-                qb.append("PREFIX owlTime: <http://www.w3.org/TR/owl-time#> \n");
-                qb.append("PREFIX edm: <http://www.europeana.eu/schemas/edm#> \n");
-                qb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
-                qb.append("PREFIX dc: <http://purl.org/dc/elements/1.1/> \n");
-                qb.append("PREFIX dcterms: <http://purl.org/dc/terms/> \n");
-                qb.append("PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n");
+                    qb.append(" SELECT DISTINCT ?title ?latitude ?longitude\n ");
 
-                qb.append(" SELECT DISTINCT ?title ?latitude ?longitude\n ");
-
-                qb.append(" WHERE {?culturalInterest dc:title ?title ;");
-                qb.append(" rdf:type schema:CulturalPlace ;");
-                qb.append(" geo:location ?spatialThing . \n ");
-                qb.append(" ?spatialThing geo:lat ?latitude ; \n ");
-                qb.append(" geo:long ?longitude . }\n");
+                    qb.append(" WHERE {?culturalInterest dc:title ?title ;");
+                    qb.append(" rdf:type schema:CulturalPlace ;");
+                    qb.append(" geo:location ?spatialThing . \n ");
+                    qb.append(" ?spatialThing geo:lat ?latitude ; \n ");
+                    qb.append(" geo:long ?longitude . }\n");
 
 
-                Log.i(TAG + " query: ", qb.toString());
+                    Log.i(TAG + " query: ", qb.toString());
 
-                result = conn.prepareTupleQuery(QueryLanguage.SPARQL, qb.toString()).evaluate();
+                    result = conn.prepareTupleQuery(QueryLanguage.SPARQL, qb.toString()).evaluate();
 
-            } finally {
-                conn.close();
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(TupleQueryResult result) {
-            super.onPostExecute(result);
-            int i = 0;
-
-            while (result.hasNext()) {
-                BindingSet bs = result.next();
-
-                Value descriptionValue = bs.getValue("title");
-                Value latitudeValue = bs.getValue("latitude");
-                Value longitudeValue = bs.getValue("longitude");
-
-                String description = descriptionValue.stringValue();
-                double latitude = Double.valueOf(latitudeValue.stringValue());
-                double longitude = Double.valueOf(longitudeValue.stringValue());
-
-
-                if (distance(latitude, longitude, mlatitude, mlongitude, "KM", 5)) {
-                    String latitudeString = String.valueOf(latitude);
-                    String longitudeString = String.valueOf(longitude);
-                    NearestCulturalInterestInfo nearestCI = new NearestCulturalInterestInfo(description, latitudeString, longitudeString);
-                    listOFNearestCI.add(nearestCI);
+                } finally {
+                    conn.close();
                 }
-            }
 
-            //TODO use handler
-            Log.i(TAG, "Size of the list: " +String.valueOf(listOFNearestCI.size()));
+                while (result.hasNext()) {
+                    BindingSet bs = result.next();
+
+                    Value descriptionValue = bs.getValue("title");
+                    Value latitudeValue = bs.getValue("latitude");
+                    Value longitudeValue = bs.getValue("longitude");
+
+                    String description = descriptionValue.stringValue();
+                    double latitude = Double.valueOf(latitudeValue.stringValue());
+                    double longitude = Double.valueOf(longitudeValue.stringValue());
+
+
+                    if (distance(latitude, longitude, mlatitude, mlongitude, "KM", 5)) {
+                        String latitudeString = String.valueOf(latitude);
+                        String longitudeString = String.valueOf(longitude);
+                        NearestCulturalInterestInfo nearestCI = new NearestCulturalInterestInfo(description, latitudeString, longitudeString);
+                        listOFNearestCI.add(nearestCI);
+                    }
+                }
+//                Message msg = new Message();
+                Message msg = handlerAlarm.obtainMessage();
+
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList(NEAREST_INTEREST_LIST, (ArrayList<? extends Parcelable>) listOFNearestCI);
+
+                msg.setData(bundle);
+                handlerAlarm.sendMessage(msg);
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+    }
+
+    private boolean distance(double lat1, double lon1, double lat2, double lon2, String unit, double distanceMax) {
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        if (unit == "K") {
+            dist = dist * 1.609344;
+        } else if (unit == "N") {
+            dist = dist * 0.8684;
         }
 
-        private boolean distance(double lat1, double lon1, double lat2, double lon2, String unit, double distanceMax) {
-            double theta = lon1 - lon2;
-            double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
-            dist = Math.acos(dist);
-            dist = rad2deg(dist);
-            dist = dist * 60 * 1.1515;
-            if (unit == "K") {
-                dist = dist * 1.609344;
-            } else if (unit == "N") {
-                dist = dist * 0.8684;
-            }
-
-            if (dist < distanceMax) {
-                return true;
-            }
-            return false;
+        if (dist < distanceMax) {
+            return true;
         }
+        return false;
+    }
 
-        /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 	/*::	This function converts decimal degrees to radians						 :*/
 	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-        private double deg2rad(double deg) {
-            return (deg * Math.PI / 180.0);
-        }
+    private double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
 
-        /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 	/*::	This function converts radians to decimal degrees						 :*/
 	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-        private double rad2deg(double rad) {
-            return (rad * 180 / Math.PI);
-        }
+    private double rad2deg(double rad) {
+        return (rad * 180 / Math.PI);
+    }
+
+//    private class GetNearestCulturalInterests extends AsyncTask<String, Void, TupleQueryResult> {
+//
+//        private double mlatitude;
+//        private double mlongitude;
+//
+//        @Override
+//        protected TupleQueryResult doInBackground(String... strings) {
+//
+//            Repository repo = new SPARQLRepository(TemporalActivity.REPOSITORY_URL);
+//            repo.initialize();
+//
+//            mlatitude = Double.valueOf(strings[0]);
+//            mlongitude = Double.valueOf(strings[1]);
+//
+//            RepositoryConnection conn = repo.getConnection();
+//
+//            TupleQueryResult result = null;
+//
+//            try {
+//                StringBuilder qb = new StringBuilder();
+//
+//                qb.append("PREFIX schema: <http://www.hevs.ch/datasemlab/cityzen/schema#> \n");
+//                qb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+//                qb.append("PREFIX owlTime: <http://www.w3.org/TR/owl-time#> \n");
+//                qb.append("PREFIX edm: <http://www.europeana.eu/schemas/edm#> \n");
+//                qb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
+//                qb.append("PREFIX dc: <http://purl.org/dc/elements/1.1/> \n");
+//                qb.append("PREFIX dcterms: <http://purl.org/dc/terms/> \n");
+//                qb.append("PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n");
+//
+//                qb.append(" SELECT DISTINCT ?title ?latitude ?longitude\n ");
+//
+//                qb.append(" WHERE {?culturalInterest dc:title ?title ;");
+//                qb.append(" rdf:type schema:CulturalPlace ;");
+//                qb.append(" geo:location ?spatialThing . \n ");
+//                qb.append(" ?spatialThing geo:lat ?latitude ; \n ");
+//                qb.append(" geo:long ?longitude . }\n");
+//
+//
+//                Log.i(TAG + " query: ", qb.toString());
+//
+//                result = conn.prepareTupleQuery(QueryLanguage.SPARQL, qb.toString()).evaluate();
+//
+//            } finally {
+//                conn.close();
+//            }
+//            return result;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(TupleQueryResult result) {
+//            super.onPostExecute(result);
+//            int i = 0;
+//
+//            while (result.hasNext()) {
+//                BindingSet bs = result.next();
+//
+//                Value descriptionValue = bs.getValue("title");
+//                Value latitudeValue = bs.getValue("latitude");
+//                Value longitudeValue = bs.getValue("longitude");
+//
+//                String description = descriptionValue.stringValue();
+//                double latitude = Double.valueOf(latitudeValue.stringValue());
+//                double longitude = Double.valueOf(longitudeValue.stringValue());
+//
+//
+//                if (distance(latitude, longitude, mlatitude, mlongitude, "KM", 5)) {
+//                    String latitudeString = String.valueOf(latitude);
+//                    String longitudeString = String.valueOf(longitude);
+//                    NearestCulturalInterestInfo nearestCI = new NearestCulturalInterestInfo(description, latitudeString, longitudeString);
+//                    listOFNearestCI.add(nearestCI);
+//                }
+//            }
+//
+//            //TODO use handler
+//            Log.i(TAG, "Size of the list: " +String.valueOf(listOFNearestCI.size()));
+//        }
+
+
+
+
 
 
 //    public void solveConflict(View view){
@@ -422,6 +508,50 @@ public class IntroActivity2 extends AppCompatActivity implements LocationListene
 //
 //    }
 
-    }
+    private Handler handlerAlarm = new Handler() {
+
+//        private Object[] rowValues = new Object[3];
+
+        @Override
+        public void handleMessage(Message msg) {
+
+            Bundle bundle = msg.getData();
+
+            List<NearestCulturalInterestInfo> myList = bundle.getParcelableArrayList(NEAREST_INTEREST_LIST);
+//            Log.i(TAG, String.valueOf(myList.size()));
+
+            Intent intent = new Intent(getBaseContext(), NearestCulturalInterestsNofiticationManager.class);
+//            intent.putExtra(NEAREST_INTEREST_LIST, (ArrayList<? extends Parcelable>) listOFNearestCI);
+//            intent.putExtra(NEAREST_INTEREST_LIST, "Hello");
+            intent.putParcelableArrayListExtra(NEAREST_INTEREST_LIST, (ArrayList<? extends Parcelable>) myList);
+
+//            Log.i(TAG, "List of NearestCI Size: " + listOFNearestCI.size());
+
+            AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Activity.ALARM_SERVICE);
+            PendingIntent pendingIntent = PendingIntent.getService(getBaseContext(), 0, intent, 0);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                Log.i(TAG, String.valueOf(System.currentTimeMillis()));
+                alarmManager.setExact(AlarmManager.RTC, System.currentTimeMillis() + 5000 , pendingIntent);
+            } else {
+                alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 5000, pendingIntent);
+            }
+
+//            Bundle bundle = msg.getData();
+//            String identifier = bundle.getString("_id");
+//            String title = bundle.getString("Title");
+//            byte[] image = bundle.getByteArray("Image");
+
+//            rowValues[0] = identifier;
+//            rowValues[1] = title;
+//            rowValues[2] = image;
+
+//            mCursorCulturalInterests.addRow(rowValues);
+//
+//            mAdapter = new CulturalInterestsAdapter(getActivity(), mCursorCulturalInterests, 0);
+//            listView.setAdapter(mAdapter);
+
+        }
+    };
 
 }

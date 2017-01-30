@@ -33,11 +33,14 @@ public class NearestCulturalInterestInfo implements Parcelable{
 
     public NearestCulturalInterestInfo(Parcel in){
 
-        String[] data = new String[3];
-        in.readStringArray(data);
-        this.description = data[0];
-        this.latitude = data[1];
-        this.longitude = data[2];
+//        String[] data = new String[3];
+//        in.readStringArray(data);
+//        this.description = data[0];
+//        this.latitude = data[1];
+//        this.longitude = data[2];
+        this.description = in.readString();
+        this.latitude = in.readString();
+        this.longitude = in.readString();
     }
 
     @Override
