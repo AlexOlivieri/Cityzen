@@ -48,3 +48,5 @@ public class NotificationReceiverActivity extends AppCompatActivity {
 //        Log.i(TAG, "Size: " + String.valueOf(culturalInterestInfos.size()));
     }
 }
+
+

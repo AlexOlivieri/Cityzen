@@ -56,7 +56,7 @@ public class NearestCulturalInterestsNofiticationManager extends Service {
 
         //TODO: see how to attach it to the notification
         Toast.makeText(this, "MyAlarmService.onCreate()", Toast.LENGTH_LONG).show();
-        Intent intentForNotification = new Intent(getApplicationContext(), NotificationReceiverActivity.class);
+        Intent intentForNotification = new Intent(getApplicationContext(), NotificationReceiverActivityWithGoogleMaps.class);
 
 //        intentForNotification.putExtra(IntroActivity.GPS_POSITION, "ciao");
         intentForNotification.putParcelableArrayListExtra(NEAREST_INTEREST_LIST, (ArrayList<NearestCulturalInterestInfo>) newListOfNearestCulturalInterestInfos);

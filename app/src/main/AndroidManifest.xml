@@ -59,7 +59,7 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".notifications.TestParcelable"></activity>
+        <activity android:name=".notifications.NotificationReceiverActivityWithGoogleMaps"></activity>
     </application>
 
 </manifest>
