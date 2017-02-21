@@ -35,6 +35,8 @@ public class CulturalInterestAudioDetailsActivity extends AppCompatActivity impl
 
     private static final String TAG = CulturalInterestAudioDetailsActivity.class.getSimpleName();
 
+    private final String REPOSITORY_URL = CityzenContracts.REPOSITORY_URL;
+
     private String title;
 
     private TextView textViewDescription;
@@ -109,7 +111,7 @@ public class CulturalInterestAudioDetailsActivity extends AppCompatActivity impl
         @Override
         protected TupleQueryResult doInBackground(String... strings) {
 
-            Repository repo = new SPARQLRepository(TemporalActivity.REPOSITORY_URL);
+            Repository repo = new SPARQLRepository(REPOSITORY_URL);
             repo.initialize();
 
             RepositoryConnection conn = repo.getConnection();

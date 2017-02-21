@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.database.MatrixCursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -112,13 +111,6 @@ public class ImageFragment extends Fragment {
                 intent.putExtra(CityzenContracts.TITLE, textView.getText());
 
                 ImageView imageView = (ImageView) view.findViewById(R.id.image_view_cultural_interest_image);
-//                Drawable drawable = imageView.getDrawable();
-//                BitmapDrawable bitmapDrawable = ((BitmapDrawable) drawable);
-//                Bitmap bitmap = bitmapDrawable .getBitmap();
-//                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-//                byte[] imageInByte = stream.toByteArray();
-//                intent.putExtra(CityzenContracts.IMAGE, imageInByte);
                 intent.putExtra(CityzenContracts.IMAGE, imageUrl);
 
                 Log.i(TAG, String.valueOf(textView.getText()));
@@ -136,17 +128,6 @@ public class ImageFragment extends Fragment {
             mListener.onFragmentInteraction(uri);
         }
     }
-
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
 
     @Override
     public void onDetach() {

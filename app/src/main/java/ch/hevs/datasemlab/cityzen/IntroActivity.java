@@ -76,8 +76,8 @@ public class IntroActivity extends AppCompatActivity {
         });
 
         //TODO
-        textViewLatitude = (TextView) findViewById(R.id.latitude);
-        textViewLongitude = (TextView) findViewById(R.id.logitude);
+//        textViewLatitude = (TextView) findViewById(R.id.latitude);
+//        textViewLongitude = (TextView) findViewById(R.id.logitude);
         createNotification();
     }
 

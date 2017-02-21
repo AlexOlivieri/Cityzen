@@ -1,6 +1,5 @@
 package ch.hevs.datasemlab.cityzen;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,17 +23,6 @@ public class CulturalInterestsGalleryActivity3 extends AppCompatActivity {
 
     private FragmentPagerAdapter adapterViewPager;
 
-    private static ProgressDialog downloadProgress;
-
-//    private static Handler downloadStateHandler = new Handler(){
-//        @Override
-//        public void handleMessage(Message msg){
-//
-//            Log.i(TAG, "handle message received");
-//            downloadProgress.dismiss();
-//        }
-//    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,13 +44,6 @@ public class CulturalInterestsGalleryActivity3 extends AppCompatActivity {
         adapterViewPager = new CulturalInterestsPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapterViewPager);
 
-//        downloadProgress = new ProgressDialog(this);
-//        downloadProgress.setMessage("Downloading Cultural Interests");
-//        downloadProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//        downloadProgress.setIndeterminate(true);
-//        downloadProgress.setMax(100);
-//        downloadProgress.setProgress(0);
-//        downloadProgress.show();
     }
 
     @Override

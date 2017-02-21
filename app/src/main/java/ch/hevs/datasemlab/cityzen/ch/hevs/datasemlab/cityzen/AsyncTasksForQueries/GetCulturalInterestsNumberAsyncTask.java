@@ -8,7 +8,7 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
-import ch.hevs.datasemlab.cityzen.TemporalActivity;
+import ch.hevs.datasemlab.cityzen.CityzenContracts;
 
 /**
  * Created by Alex on 9/4/2016.
@@ -29,7 +29,7 @@ public class GetCulturalInterestsNumberAsyncTask extends AsyncTask<String, Void,
     @Override
     protected Integer doInBackground(String... strings) {
 
-        Repository repo = new SPARQLRepository(TemporalActivity.REPOSITORY_URL);
+        Repository repo = new SPARQLRepository(CityzenContracts.REPOSITORY_URL);
         repo.initialize();
 
         RepositoryConnection conn = repo.getConnection();

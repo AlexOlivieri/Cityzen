@@ -44,8 +44,6 @@
         <activity android:name=".demo.ItineraryActivity" />
         <activity android:name=".demo.UserCredibility" />
         <activity android:name=".timetravel.SimilarInterestActivity" />
-        <activity android:name=".notifications.NotificationReceiverActivity" />
-        <activity android:name=".notifications.CreateTheNotificationActivity" />
         <activity android:name=".IntroActivity2">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -54,12 +52,20 @@
             </intent-filter>
         </activity>
 
-        <service
+        <!--
+       <service
             android:name=".notifications.NearestCulturalInterestsNofiticationManager"
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".notifications.NotificationReceiverActivityWithGoogleMaps"></activity>
+       <activity android:name=".notifications.NotificationReceiverActivityWithGoogleMaps" />
+        <activity android:name=".notifications.NotificationReceiverActivity" />
+        <activity android:name=".notifications.CreateTheNotificationActivity" />
+        -->
+
+        <activity android:name=".history_old.GalleryActivity" />
+        <activity android:name=".history.MainCarouselActivity" />
+        <activity android:name=".history_new.MainCarouselActivity" />
     </application>
 
 </manifest>

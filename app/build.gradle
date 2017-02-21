@@ -52,20 +52,29 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
     compile files('libs/xercesImplMod.jar')
 //    compile group: 'xerces', name: 'xercesImpl', version: '2.11.0'
 //    compile group: 'xerces', name: 'xercesImpl', version: '2.11.0.SP4-redhat-1'
     compile group: 'com.ToxicBakery.viewpager.transforms', name: 'view-pager-transforms', version: '1.2.32'
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'org.eclipse.rdf4j:rdf4j-repository-sparql:1.0M2'
-    compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
-    compile 'com.android.support:support-v4:24.2.0'
-    compile 'org.slf4j:slf4j-simple:1.6.1'
-//    compile 'com.google.android.gms:play-services:9.8.0'
-    compile 'com.android.support:support-annotations:25.0.0'
-    compile 'com.google.android.gms:play-services:10.0.1'
-    compile 'com.android.support:support-annotations:24.2.0'
+    //    compile 'com.google.android.gms:play-services:9.8.0'
+    //    compile 'com.android.support:support-annotations:24.2.0'
 //    compile 'com.google.android.gms:play-services:9.4.0'
 //    compile 'com.google.android.gms:play-services-appindexing:10.0.1'
+    // Google Play services Auth split
+//    compile 'com.google.android.gms:play-services-auth:10.0.1'
+// Google Api Client library and Android extension
+//    compile 'com.google.api-client:google-api-client:1.22.0'
+//    compile 'com.google.api-client:google-api-client-android:1.22.0'
+//    compile 'com.google.android.gms:play-services-appindexing:10.0.1'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'org.eclipse.rdf4j:rdf4j-repository-sparql:1.0M2'
+    compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'org.slf4j:slf4j-simple:1.6.1'
+    compile 'com.android.support:support-annotations:25.0.0'
+    compile 'com.google.android.gms:play-services:10.2.0'
+    compile 'com.github.moondroid.coverflow:library:1.0'
+    compile 'com.android.support:cardview-v7:24.2.1'
+    testCompile 'junit:junit:4.12'
+    compile 'com.chabbal:slidingdotsplash:1.0.2'
 }

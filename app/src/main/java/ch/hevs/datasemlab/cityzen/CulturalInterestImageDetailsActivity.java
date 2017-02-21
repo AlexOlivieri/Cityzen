@@ -33,11 +33,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.hevs.datasemlab.cityzen.history_new.MainCarouselActivity;
 import ch.hevs.datasemlab.cityzen.timetravel.SimilarInterestActivity;
 
 public class CulturalInterestImageDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = CulturalInterestImageDetailsActivity.class.getSimpleName();
+
+    private final String REPOSITORY_URL = CityzenContracts.REPOSITORY_URL;
 
     private String title;
     private String imageURL;
@@ -107,6 +110,17 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
             }
         });
 
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i(TAG, "On Long Click");
+
+                Intent intent = new Intent(getApplicationContext(), MainCarouselActivity.class);
+                intent.putExtra(CityzenContracts.TITLE, title);
+                startActivity(intent);
+            }
+        });
+
         textViewDescription = (TextView) findViewById(R.id.text_view_description_details);
 
 //        Button addButton = (Button) findViewById(R.id.button_add_interest);
@@ -138,7 +152,7 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
         @Override
         protected TupleQueryResult doInBackground(String... strings) {
 
-            Repository repo = new SPARQLRepository(TemporalActivity.REPOSITORY_URL);
+            Repository repo = new SPARQLRepository(REPOSITORY_URL);
             repo.initialize();
 
             RepositoryConnection conn = repo.getConnection();
@@ -215,7 +229,7 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
         @Override
         protected Integer doInBackground(String... strings) {
 
-            Repository repo = new SPARQLRepository(TemporalActivity.REPOSITORY_URL);
+            Repository repo = new SPARQLRepository(REPOSITORY_URL);
             repo.initialize();
 
             RepositoryConnection conn = repo.getConnection();
@@ -267,7 +281,7 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
 
             String title = strings[0];
 
-            Repository repo = new SPARQLRepository(TemporalActivity.REPOSITORY_URL);
+            Repository repo = new SPARQLRepository(REPOSITORY_URL);
             repo.initialize();
 
             RepositoryConnection conn = repo.getConnection();
@@ -388,7 +402,7 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
 
             String queryString = strings[0];
 
-            Repository repo = new SPARQLRepository(TemporalActivity.REPOSITORY_URL);
+            Repository repo = new SPARQLRepository(REPOSITORY_URL);
             repo.initialize();
 
             RepositoryConnection conn = repo.getConnection();

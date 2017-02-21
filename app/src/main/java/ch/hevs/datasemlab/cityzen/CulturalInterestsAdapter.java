@@ -64,31 +64,4 @@ public class CulturalInterestsAdapter extends CursorAdapter{
         //textViewDescription.setText(description);
     }
 
-//    private class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
-//
-//        @Override
-//        protected Bitmap doInBackground(String... strings) {
-//            URL url = null;
-//            Bitmap image = null;
-//            try {
-//                url = new URL(strings[0]);
-//                InputStream inputStream = url.openStream();
-//                image = BitmapFactory.decodeStream(inputStream);
-//            }catch (MalformedURLException e){
-//                e.printStackTrace();
-//            }catch (IOException e){
-//                e.printStackTrace();
-//            }
-//
-//            return image;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Bitmap bitmap) {
-//            super.onPostExecute(bitmap);
-//            if(bitmap != null) {
-//                imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 120, 120, false));
-//            }
-//        }
-//    }
 }

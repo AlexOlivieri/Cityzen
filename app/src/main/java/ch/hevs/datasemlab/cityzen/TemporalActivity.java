@@ -29,13 +29,12 @@ import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import static ch.hevs.datasemlab.cityzen.CityzenContracts.REPOSITORY_URL;
+
 public class TemporalActivity extends AppCompatActivity {
 
     private final String TAG = TemporalActivity.class.getSimpleName();
 
-   public static final String REPOSITORY_URL = "http://ec2-52-39-53-29.us-west-2.compute.amazonaws.com:8080/openrdf-sesame/repositories/CityZenDM";
-//    public static final String REPOSITORY_URL = "http://ec2-52-39-53-29.us-west-2.compute.amazonaws.com:8080/openrdf-sesame/repositories/ShabanTest";
-//
     private int currentYear;
 
     private SeekBar seekBarStart;
@@ -171,7 +170,7 @@ public class TemporalActivity extends AppCompatActivity {
             if (isConnected) {
                 buttonCulturalInterestsExploration.setClickable(true);
                 //TODO perform all tasks from internet
-                new GetOldestStartingDateTask().execute(REPOSITORY_URL);
+                new GetOldestStartingDateTask().execute(CityzenContracts.REPOSITORY_URL);
             } else {
                 buttonCulturalInterestsExploration.setClickable(false);
                 //TODO Take info from SQLite if presents
@@ -563,6 +562,8 @@ public class TemporalActivity extends AppCompatActivity {
             intervalToBeChanged = false;
 
             Intent exploreCulturalInterestsIntent = new Intent(this, CulturalInterestsGalleryActivity3.class);
+            Log.i(TAG, "Starting Date: " + startingDate);
+            Log.i(TAG, "Finishing Date: " + finishingDate);
             exploreCulturalInterestsIntent.putExtra(CityzenContracts.STARTING_DATE, startingDate);
             exploreCulturalInterestsIntent.putExtra(CityzenContracts.FINISHING_DATE, finishingDate);
             startActivity(exploreCulturalInterestsIntent);

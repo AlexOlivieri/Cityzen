@@ -31,6 +31,9 @@ public class CityzenContracts {
 
     public final String API_KEY = "AIzaSyD_DBmyjuHhsCDHxygwZCI02a0q6AZH1hE";
 
-    public static final String REPOSITORY_URL = "http://ec2-52-39-53-29.us-west-2.compute.amazonaws.com:8080/openrdf-sesame/repositories/CityZenDM";
+    public static final String REPOSITORY_URL = "http://88.99.66.215:8080/rdf4j-server/repositories/CityZenDM";
+
+    public static final String LATITUDE = "latitude";
+    public static final String LONGITUDE = "longitude";
 
 }

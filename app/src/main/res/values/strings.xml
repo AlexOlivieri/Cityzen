@@ -29,5 +29,8 @@
     <string name="button_discarded">Skip</string>
     <string name="notification_message">This is the result activity opened from the notification</string>
     <string name="create_notification">Create Notification</string>
+    <string name="historical_item_title">Title</string>
+    <string name="year_of_cultural_interest">2015</string>
+    <string name="description_of_the_cultural_interest">This is my description</string>
 
 </resources>
