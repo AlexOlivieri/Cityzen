@@ -33,7 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_below="@id/text_view_title_details"
-                android:gravity="center_horizontal"
+                android:gravity="left"
                 android:contentDescription="@string/image_of_the_cultural_interest" />
 
             <fragment
@@ -50,6 +50,7 @@
                 android:textSize="18sp"
                 android:layout_below="@id/map"/>
 
+            <!--
             <Button
                 android:id="@+id/button_add_interest"
                 android:text="Search Similar"
@@ -63,6 +64,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_marginLeft="290dp"
                 android:layout_marginStart="290dp" />
+            -->
 
         </RelativeLayout>
 

@@ -97,15 +97,18 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
             public boolean onLongClick(View view) {
                 Log.i(TAG, "On Long Click");
 
-                Intent intent = new Intent(getApplicationContext(), TimeTravelActivity.class);
-                intent.putExtra(CityzenContracts.TITLE, title);
-                intent.putExtra(CityzenContracts.NUMBER_OF_CULTURAL_INTERESTS, numberOfCulturalInterestsWithThisTitle);
-                if(mCulturalInterestsList == null || mDatesList == null){
-                    Log.i(TAG, "one of the list is null");
-                }
-                intent.putExtra(CityzenContracts.IMAGES_ARRAY_LIST, mCulturalInterestsList);
-                intent.putExtra(CityzenContracts.DATES_ARRAY_LIST, mDatesList);
-                startActivity(intent);
+//                Intent intent = new Intent(getApplicationContext(), TimeTravelActivity.class);
+//                intent.putExtra(CityzenContracts.TITLE, title);
+//                intent.putExtra(CityzenContracts.NUMBER_OF_CULTURAL_INTERESTS, numberOfCulturalInterestsWithThisTitle);
+//                if(mCulturalInterestsList == null || mDatesList == null){
+//                    Log.i(TAG, "one of the list is null");
+//                }
+//                intent.putExtra(CityzenContracts.IMAGES_ARRAY_LIST, mCulturalInterestsList);
+//                intent.putExtra(CityzenContracts.DATES_ARRAY_LIST, mDatesList);
+//                startActivity(intent);
+//                return true;
+
+                searchSimilar();
                 return true;
             }
         });
@@ -368,7 +371,8 @@ public class CulturalInterestImageDetailsActivity extends AppCompatActivity impl
 //        startActivity(intent);
 //    }
 
-    public void searchSimilar(View view){
+//    public void searchSimilar(View view){
+    public void searchSimilar(){
 
         StringBuilder qb = new StringBuilder();
 
