@@ -63,7 +63,6 @@
         <activity android:name=".notifications.CreateTheNotificationActivity" />
 
 
-        <activity android:name=".history_old.GalleryActivity" />
         <activity android:name=".history.MainCarouselActivity" />
         <activity android:name=".history_new.MainCarouselActivity" />
     </application>

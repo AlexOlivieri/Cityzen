@@ -18,4 +18,14 @@
         android:textSize="18sp"
         android:text="@string/cultural_item_title" />
 
+    <RatingBar
+        android:id="@+id/rating_bar_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="1"
+        android:stepSize="1.0"
+        android:rating="1.0"
+        android:progressTint="@color/green"
+        />
+
 </LinearLayout>
